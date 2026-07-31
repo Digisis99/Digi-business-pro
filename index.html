@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Smart Online Business Pro OS - Advanced Stock & WhatsApp Edition</title>
+    <title>Smart Online Business Pro OS - Advanced Profit & Shipping Edition</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,14 +104,14 @@
         <header class="glass-card p-5 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="flex items-center gap-4">
                 <div class="p-3.5 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-2xl shadow-lg shadow-indigo-500/30">
-                    <i class="fas fa-store text-2xl text-white"></i>
+                    <i class="fas fa-chart-line text-2xl text-white"></i>
                 </div>
                 <div>
                     <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-3">
-                        Smart Business & Inventory Manager
+                        Smart Business Pro Analytics
                         <span id="syncBadge" class="sync-success"><i class="fa-solid fa-cloud-check"></i> Cloud Synced</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium">Orders, Low Stock Alerts, Best-Sellers & WhatsApp Messaging</p>
+                    <p class="text-xs text-slate-400 font-medium">Profit Tracking, Sales Growth, Stock & Custom Shipping Labels</p>
                 </div>
             </div>
 
@@ -128,7 +128,7 @@
             </div>
         </header>
 
-        <!-- KPI Metrics Grid Cards -->
+        <!-- KPI Metrics Grid Cards (With Total Profit & Sales Growth) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-emerald-500">
                 <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
@@ -141,33 +141,33 @@
 
             <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-indigo-500">
                 <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>Total Orders</span>
-                    <span class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg"><i class="fas fa-shopping-bag"></i></span>
+                    <span>Total Net Profit (ශුද්ධ ලාභය)</span>
+                    <span class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg"><i class="fas fa-coins"></i></span>
                 </div>
-                <div class="text-2xl font-black text-indigo-400 font-mono"><span id="kpiTotalOrders">0</span> Orders</div>
-                <p class="text-[11px] text-slate-400 mt-2">ඇතුළත් කළ මුළු Orders</p>
+                <div class="text-2xl font-black text-indigo-400 font-mono">Rs. <span id="kpiTotalProfit">0.00</span></div>
+                <p class="text-[11px] text-emerald-400 font-bold mt-2" id="kpiProfitMargin">Margin: 0%</p>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-purple-500">
+                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Sales Growth (වර්ධනය)</span>
+                    <span class="p-2 bg-purple-500/10 text-purple-400 rounded-lg"><i class="fas fa-arrow-trend-up"></i></span>
+                </div>
+                <div class="text-2xl font-black text-purple-400 font-mono"><span id="kpiSalesGrowth">0%</span></div>
+                <p class="text-[11px] text-slate-400 mt-2">විකුණුම් වර්ධන ප්‍රතිශතය</p>
             </div>
 
             <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-amber-500">
                 <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>Low Stock Items</span>
+                    <span>Low Stock Alerts</span>
                     <span class="p-2 bg-amber-500/10 text-amber-400 rounded-lg pulse-badge"><i class="fas fa-triangle-exclamation"></i></span>
                 </div>
                 <div class="text-2xl font-black text-amber-400 font-mono"><span id="kpiLowStock">0</span> Items</div>
-                <p class="text-[11px] text-slate-400 mt-2">ඉවර වෙන්න ලඟ භාණ්ඩ</p>
-            </div>
-
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-pink-500">
-                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>Top Best-Seller</span>
-                    <span class="p-2 bg-pink-500/10 text-pink-400 rounded-lg"><i class="fas fa-fire"></i></span>
-                </div>
-                <div class="text-base font-black text-pink-400 truncate" id="kpiTopSeller">-</div>
-                <p class="text-[11px] text-slate-400 mt-2">වැඩිපුරම විකිණුනු භාණ්ඩය</p>
+                <p class="text-[11px] text-slate-400 mt-2">තොග ඉවර වෙන්න ලඟ භාණ්ඩ</p>
             </div>
         </div>
 
-        <!-- Inventory & Stock Management Section -->
+        <!-- Inventory & Item-Wise Profit Management Section -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Add Inventory Item Form -->
             <div class="lg:col-span-4 no-print space-y-6">
@@ -179,42 +179,46 @@
                     </div>
                     <form id="stockForm" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Item / Product Name</label>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Name</label>
                             <input type="text" id="stockItemName" placeholder="උදා: Smart Watch Series 8" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Quantity (තොගය)</label>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Stock Qty (තොගය)</label>
                                 <input type="number" id="stockQty" min="0" placeholder="e.g. 50" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Unit Price (Rs)</label>
-                                <input type="number" id="stockPrice" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Buying Cost (ගත් මිල)</label>
+                                <input type="number" id="stockCost" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
                             </div>
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Selling Price (විකුණන මිල)</label>
+                            <input type="number" id="stockPrice" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                        </div>
                         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
-                            <i class="fas fa-plus"></i> Save Inventory Item
+                            <i class="fas fa-plus"></i> Save Inventory & Profit Margin
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Stock Directory Table & Low Stock Alerts -->
+            <!-- Stock Directory Table & Item-Wise Profit -->
             <div class="lg:col-span-8">
                 <div class="glass-card p-6 rounded-3xl overflow-hidden">
                     <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
                         <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fas fa-warehouse text-amber-400"></i> Stock Status & Low-Stock Alerts
+                            <i class="fas fa-warehouse text-amber-400"></i> Stock & Item-Wise Profit Breakdown
                         </h2>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[500px]">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
                                 <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
                                     <th class="p-3">Item Name</th>
-                                    <th class="p-3 text-right">Unit Price</th>
+                                    <th class="p-3 text-right">Cost / Sale</th>
+                                    <th class="p-3 text-right">Profit / Unit</th>
                                     <th class="p-3 text-center">Available Stock</th>
-                                    <th class="p-3 text-center">Stock Indicator</th>
                                     <th class="p-3 text-center no-print">Actions</th>
                                 </tr>
                             </thead>
@@ -225,21 +229,21 @@
             </div>
         </div>
 
-        <!-- Performance Analytics Charts Section -->
+        <!-- Sales Growth Analytics Graphs Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card p-6 rounded-3xl">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
-                    <i class="fas fa-fire text-pink-400"></i> Top Best-Selling Products (වැඩිපුරම අලෙවි වූ භාණ්ඩ)
+                    <i class="fas fa-chart-line text-purple-400"></i> Sales Growth Trend (විකුණුම් වර්ධන ප්‍රස්ථාරය)
                 </h2>
                 <div class="relative h-64 w-full">
-                    <canvas id="bestSellerChart"></canvas>
+                    <canvas id="salesGrowthChart"></canvas>
                 </div>
             </div>
 
-            <!-- Order Placement Form -->
+            <!-- Order Placement Form with Item Quantity -->
             <div class="glass-card p-6 rounded-3xl no-print">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
-                    <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න (Auto Stock Deduct)
+                    <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න
                 </h2>
                 <form id="orderForm" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -253,24 +257,30 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2">
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Select Item from Stock</label>
                             <select id="orderItemSelect" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required></select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Courier / Tracking Ref</label>
-                            <input type="text" id="trackingRef" placeholder="e.g. PRPR-102938" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Order Qty (ප්‍රමාණය)</label>
+                            <input type="number" id="orderQty" min="1" value="1" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-bold bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Delivery Address</label>
-                        <input type="text" id="custAddress" placeholder="e.g. No 12, Main Street, Colombo 03" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Courier / Tracking Ref</label>
+                            <input type="text" id="trackingRef" placeholder="e.g. PRPR-102938" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address</label>
+                            <input type="text" id="custAddress" placeholder="No 12, Main Street, Colombo" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
-                        <i class="fas fa-check-circle"></i> Place Order & Deduct Stock
+                        <i class="fas fa-check-circle"></i> Place Order & Deduct Multi-Stock
                     </button>
                 </form>
             </div>
@@ -280,17 +290,17 @@
         <div class="glass-card p-6 rounded-3xl overflow-hidden">
             <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
                 <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & WhatsApp Status Sender
+                    <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & Order-Wise Profit Tracker
                 </h2>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[700px]">
+                <table class="w-full text-left border-collapse min-w-[750px]">
                     <thead>
                         <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
-                            <th class="p-3">Order Details</th>
+                            <th class="p-3">Order Items & Qty</th>
                             <th class="p-3">Customer & Address</th>
-                            <th class="p-3 text-center">Tracking No</th>
-                            <th class="p-3 text-center">Order Status</th>
+                            <th class="p-3 text-right">Order Profit</th>
+                            <th class="p-3 text-center">Status</th>
                             <th class="p-3 text-center no-print">WhatsApp & Sticker</th>
                         </tr>
                     </thead>
@@ -301,12 +311,12 @@
 
     </div>
 
-    <!-- PRINTABLE SHIPPING LABEL STICKER MODAL -->
+    <!-- CUSTOM EDITABLE PRINTABLE SHIPPING LABEL STICKER MODAL -->
     <div id="shippingStickerModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white text-slate-900 p-6 rounded-2xl max-w-md w-full border-2 border-black space-y-4 shadow-2xl">
             <div class="border-b-2 border-black pb-2 text-center">
                 <h3 class="text-xl font-black uppercase tracking-wider">PARCEL SHIPPING LABEL</h3>
-                <p class="text-xs font-mono">PRIORITY COURIER DELIVERY</p>
+                <p class="text-xs font-mono">EXPRESS COURIER DELIVERY</p>
             </div>
             
             <div class="grid grid-cols-2 gap-2 text-xs border-b pb-3">
@@ -328,18 +338,20 @@
             </div>
 
             <div class="text-xs space-y-1 border-b pb-3">
-                <span class="font-bold text-slate-500 uppercase block">PACKAGE CONTENT:</span>
+                <span class="font-bold text-slate-500 uppercase block">PACKAGE CONTENTS & QTY:</span>
                 <p id="lblItemName" class="font-bold text-sm text-indigo-900"></p>
             </div>
 
-            <div class="text-xs space-y-0.5">
-                <span class="font-bold text-slate-500 uppercase block">FROM (යවන කෙනා):</span>
-                <p class="font-bold">Smart Business Store</p>
-                <p class="text-slate-600">Tel: 077-1234567 / Sri Lanka</p>
+            <!-- CUSTOM EDITABLE SENDER SECTION -->
+            <div class="text-xs space-y-1 bg-slate-50 p-2 rounded-lg border">
+                <span class="font-bold text-slate-500 uppercase block">FROM / SENDER DETAILS (එවන පාර්ශවය - Edit කළ හැක):</span>
+                <input type="text" id="lblSenderName" value="Smart Business Store" class="w-full border p-1 text-xs font-bold rounded">
+                <input type="text" id="lblSenderPhone" value="077-1234567" class="w-full border p-1 text-xs font-mono rounded">
+                <input type="text" id="lblSenderAddress" value="Colombo, Sri Lanka" class="w-full border p-1 text-xs rounded">
             </div>
 
             <div class="flex gap-2 no-print-btn pt-2">
-                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs"><i class="fas fa-print"></i> Print Sticker</button>
+                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs"><i class="fas fa-print"></i> Print Label</button>
                 <button onclick="closeSticker()" class="w-full bg-slate-200 text-slate-800 font-bold py-2 rounded-xl text-xs">Close</button>
             </div>
         </div>
@@ -437,15 +449,15 @@
     <script>
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [
-            { id: 1, name: "Smart Watch Series 8", qty: 15, price: 8500 },
-            { id: 2, name: "Bluetooth Earbuds Pro", qty: 3, price: 4200 }
+            { id: 1, name: "Smart Watch Series 8", qty: 20, cost: 5500, price: 8500 },
+            { id: 2, name: "Bluetooth Earbuds Pro", qty: 4, cost: 2500, price: 4200 }
         ];
         let orders = JSON.parse(localStorage.getItem('biz_orders_data')) || [];
-        let chartInstance = null;
+        let salesChartInstance = null;
 
         const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        // Auth handling
+        // Auth Handling
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if (document.getElementById('inputPin').value === savedPin) {
@@ -475,32 +487,38 @@
             }
         }
 
-        // Add Stock Item
+        // Add Inventory Item & Profit Margin
         document.getElementById('stockForm').addEventListener('submit', (e) => {
             e.preventDefault();
             inventory.push({
                 id: Date.now(),
                 name: document.getElementById('stockItemName').value,
                 qty: parseInt(document.getElementById('stockQty').value) || 0,
+                cost: parseFloat(document.getElementById('stockCost').value) || 0,
                 price: parseFloat(document.getElementById('stockPrice').value) || 0
             });
             document.getElementById('stockForm').reset();
             saveAndSync();
         });
 
-        // Place Order & Deduct Stock
+        // Place Order with Quantity
         document.getElementById('orderForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('orderItemSelect').value);
+            const reqQty = parseInt(document.getElementById('orderQty').value) || 1;
             const stockItem = inventory.find(i => i.id === itemId);
 
-            if (!stockItem || stockItem.qty <= 0) {
-                alert('⚠️ තෝරාගත් භාණ්ඩයේ Stock එක අවසන් වී ඇත (Out of Stock)!');
+            if (!stockItem || stockItem.qty < reqQty) {
+                alert(`⚠️ තෝරාගත් භාණ්ඩයේ Stock එක ප්‍රමාණවත් නැත! (Available: ${stockItem ? stockItem.qty : 0})`);
                 return;
             }
 
             // Deduct Stock
-            stockItem.qty -= 1;
+            stockItem.qty -= reqQty;
+
+            const totalItemCost = stockItem.cost * reqQty;
+            const totalItemSale = stockItem.price * reqQty;
+            const totalOrderProfit = totalItemSale - totalItemCost;
 
             const newOrder = {
                 id: Date.now(),
@@ -508,7 +526,9 @@
                 custPhone: document.getElementById('custPhone').value,
                 custAddress: document.getElementById('custAddress').value,
                 itemName: stockItem.name,
-                price: stockItem.price,
+                orderQty: reqQty,
+                price: totalItemSale,
+                profit: totalOrderProfit,
                 trackingRef: document.getElementById('trackingRef').value || 'Pending',
                 status: 'Processing',
                 date: new Date().toLocaleDateString()
@@ -537,7 +557,7 @@
         function sendWhatsAppMsg(id) {
             const ord = orders.find(o => o.id === id);
             if (ord) {
-                let msg = `👋 *Hello ${ord.custName}*,\n\nඔබගේ Order එකෙහි විස්තර පහත දැක්වේ:\n📦 *Item:* ${ord.itemName}\n💰 *Price:* Rs. ${formatMoney(ord.price)}\n🚚 *Status:* ${ord.status}\n📌 *Tracking No:* ${ord.trackingRef}\n\nස්තූතියි!`;
+                let msg = `👋 *Hello ${ord.custName}*,\n\nඔබගේ Order එකෙහි විස්තර පහත දැක්වේ:\n📦 *Item:* ${ord.itemName} (Qty: ${ord.orderQty})\n💰 *Price:* Rs. ${formatMoney(ord.price)}\n🚚 *Status:* ${ord.status}\n📌 *Tracking No:* ${ord.trackingRef}\n\nස්තූතියි!`;
                 window.open(`https://wa.me/${ord.custPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
             }
         }
@@ -550,7 +570,7 @@
                 document.getElementById('lblCustName').innerText = ord.custName;
                 document.getElementById('lblCustPhone').innerText = ord.custPhone;
                 document.getElementById('lblCustAddress').innerText = ord.custAddress;
-                document.getElementById('lblItemName').innerText = ord.itemName;
+                document.getElementById('lblItemName').innerText = `${ord.itemName} (Qty: ${ord.orderQty})`;
                 document.getElementById('shippingStickerModal').classList.remove('hidden');
             }
         }
@@ -583,19 +603,20 @@
         }
 
         function renderApp() {
-            // Render Stock Select Options
+            // Render Stock Select
             const selectEl = document.getElementById('orderItemSelect');
             selectEl.innerHTML = '';
             inventory.forEach(i => {
                 selectEl.innerHTML += `<option value="${i.id}">${i.name} (In Stock: ${i.qty}) - Rs.${i.price}</option>`;
             });
 
-            // Render Stock Table
+            // Render Stock Table with Item-Wise Profit
             const stockBody = document.getElementById('stockTableBody');
             stockBody.innerHTML = '';
             let lowStockCount = 0;
 
             inventory.forEach(i => {
+                const itemProfit = i.price - i.cost;
                 let badge = `<span class="bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full text-xs font-bold">Good Stock ✓</span>`;
                 if (i.qty <= 5 && i.qty > 0) {
                     badge = `<span class="bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold pulse-badge">Low Stock ⚠️</span>`;
@@ -608,9 +629,9 @@
                 stockBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
                         <td class="p-3 font-bold text-white">${i.name}</td>
-                        <td class="p-3 text-right font-mono text-emerald-400">Rs. ${formatMoney(i.price)}</td>
-                        <td class="p-3 text-center font-mono font-bold text-base text-white">${i.qty}</td>
-                        <td class="p-3 text-center">${badge}</td>
+                        <td class="p-3 text-right font-mono text-xs">Cost: Rs.${formatMoney(i.cost)}<br><span class="text-emerald-400 font-bold">Sale: Rs.${formatMoney(i.price)}</span></td>
+                        <td class="p-3 text-right font-mono font-bold text-indigo-400">Rs. ${formatMoney(itemProfit)}</td>
+                        <td class="p-3 text-center font-mono font-bold text-white">${i.qty}<br>${badge}</td>
                         <td class="p-3 text-center no-print">
                             <button onclick="deleteStock(${i.id})" class="text-slate-500 hover:text-rose-400 p-1"><i class="fas fa-trash-alt"></i></button>
                         </td>
@@ -622,23 +643,23 @@
             const ordersBody = document.getElementById('ordersTableBody');
             ordersBody.innerHTML = '';
             let totalRev = 0;
-            let bestSellerMap = {};
+            let totalNetProfit = 0;
 
             orders.forEach(o => {
                 totalRev += o.price;
-                bestSellerMap[o.itemName] = (bestSellerMap[o.itemName] || 0) + 1;
+                totalNetProfit += (o.profit || 0);
 
                 ordersBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
                         <td class="p-3">
-                            <div class="font-bold text-white">${o.itemName}</div>
-                            <div class="text-xs text-indigo-400">Rs. ${formatMoney(o.price)} | ${o.date}</div>
+                            <div class="font-bold text-white">${o.itemName} <span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full">Qty: ${o.orderQty || 1}</span></div>
+                            <div class="text-xs text-slate-400">Sale: Rs. ${formatMoney(o.price)} | ${o.date}</div>
                         </td>
                         <td class="p-3">
                             <div class="font-bold text-slate-200">${o.custName} (${o.custPhone})</div>
                             <div class="text-xs text-slate-400 truncate max-w-[200px]">${o.custAddress}</div>
                         </td>
-                        <td class="p-3 text-center font-mono font-bold text-xs text-amber-400">${o.trackingRef}</td>
+                        <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(o.profit || 0)}</td>
                         <td class="p-3 text-center">
                             <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-white">
                                 <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
@@ -655,30 +676,35 @@
                 `;
             });
 
-            // KPI Updates
+            // KPI & Sales Growth Updates
             document.getElementById('kpiRevenue').innerText = formatMoney(totalRev);
-            document.getElementById('kpiTotalOrders').innerText = orders.length;
+            document.getElementById('kpiTotalProfit').innerText = formatMoney(totalNetProfit);
             document.getElementById('kpiLowStock').innerText = lowStockCount;
 
-            const topSeller = Object.keys(bestSellerMap).reduce((a, b) => bestSellerMap[a] > bestSellerMap[b] ? a : b, '-');
-            document.getElementById('kpiTopSeller').innerText = topSeller !== '-' ? topSeller : 'තවම නොමැත';
+            const margin = totalRev > 0 ? ((totalNetProfit / totalRev) * 100).toFixed(1) : 0;
+            document.getElementById('kpiProfitMargin').innerText = `Profit Margin: ${margin}%`;
 
-            renderBestSellerChart(bestSellerMap);
+            const salesGrowth = orders.length > 1 ? (((orders.length - 1) / orders.length) * 100).toFixed(0) : 100;
+            document.getElementById('kpiSalesGrowth').innerText = `+${salesGrowth}% Growth`;
+
+            renderSalesGrowthChart();
         }
 
-        function renderBestSellerChart(bestSellerMap) {
-            const ctx = document.getElementById('bestSellerChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
+        function renderSalesGrowthChart() {
+            const ctx = document.getElementById('salesGrowthChart').getContext('2d');
+            if (salesChartInstance) salesChartInstance.destroy();
 
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: Object.keys(bestSellerMap),
+                    labels: orders.slice(-6).map(o => o.date),
                     datasets: [{
-                        label: 'Sold Units Count',
-                        data: Object.values(bestSellerMap),
-                        backgroundColor: '#ec4899',
-                        borderRadius: 8
+                        label: 'Revenue Trend (Rs)',
+                        data: orders.slice(-6).map(o => o.price),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
