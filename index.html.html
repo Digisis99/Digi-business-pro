@@ -1,0 +1,671 @@
+﻿<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Smart Online Business Pro OS - Advanced Edition</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons & Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Performance Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-glow: #6366f1;
+            --secondary-glow: #ec4899;
+            --accent-glow: #06b6d4;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0f172a 0%, #1e1b4b 40%, #030712 100%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            min-height: 100vh;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Animated Glowing Buttons */
+        .btn-animated {
+            position: relative;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+            background-size: 200% 200%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-animated:hover {
+            background-position: right center;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-animated i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-animated:hover i {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* Smart Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(23px);
+        }
+
+        /* Pulse Glowing Badges */
+        .pulse-badge {
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        #syncBadge { font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
+        .sync-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .sync-loading { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .glass-card { background: white !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-8">
+
+    <!-- AUTHENTICATION / PIN LOCK SCREEN -->
+    <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-4">
+        <div class="w-full max-w-md glass-card p-8 rounded-3xl text-center space-y-6 border border-white/20">
+            <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-purple-500/30 animate-bounce">
+                <i class="fas fa-store text-3xl text-white"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-black text-white tracking-tight">Smart E-Commerce OS</h2>
+                <p class="text-xs text-slate-400 mt-1">පද්ධතියට පිවිසීමට Access PIN අංකය ඇතුළත් කරන්න</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <input type="password" id="inputPin" placeholder="••••" maxlength="6" class="w-full text-center text-2xl tracking-[12px] font-mono rounded-xl border border-slate-700 p-3.5 focus:ring-2 focus:ring-pink-500 outline-none bg-slate-900/80 text-white" required autofocus>
+                </div>
+                <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-lock-open"></i> Unlock Dashboard
+                </button>
+            </form>
+            <p class="text-[11px] text-slate-500">Default PIN: <span class="font-mono font-bold text-slate-300">1234</span></p>
+        </div>
+    </div>
+
+    <!-- MAIN APP DASHBOARD -->
+    <div id="mainSystem" class="max-w-7xl mx-auto space-y-6 hidden">
+        
+        <!-- Top Navigation Header -->
+        <header class="glass-card p-5 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="p-3.5 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-2xl shadow-lg shadow-indigo-500/30">
+                    <i class="fas fa-chart-line text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-3">
+                        Online Business Pro
+                        <span id="syncBadge" class="sync-success"><i class="fa-solid fa-cloud-check"></i> Cloud Synced</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Real-Time Sales, Performance Analytics & Order Tracker</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 no-print w-full md:w-auto">
+                <button onclick="changePinModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                    <i class="fas fa-key text-amber-400"></i> PIN
+                </button>
+                <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold px-4 py-2 rounded-xl shadow-lg hover:scale-[1.02] transition flex items-center gap-1.5 text-xs">
+                    <i class="fas fa-print"></i> Report
+                </button>
+                <button onclick="clearAllData()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3.5 py-2 rounded-xl font-semibold transition text-xs flex items-center gap-1.5">
+                    <i class="fas fa-trash-alt"></i> Clear
+                </button>
+                <button onclick="lockSystem()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3.5 py-2 rounded-xl font-semibold transition text-xs flex items-center gap-1.5">
+                    <i class="fas fa-lock"></i> Lock
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Metrics Grid Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-emerald-500">
+                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Total Revenue (ආදායම)</span>
+                    <span class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg"><i class="fas fa-wallet"></i></span>
+                </div>
+                <div class="text-2xl font-black text-emerald-400 font-mono">Rs. <span id="kpiRevenue">0.00</span></div>
+                <p class="text-[11px] text-slate-400 mt-2"><i class="fas fa-arrow-up text-emerald-400"></i> සම්පූර්ණ විකුණුම් එකතුව</p>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-rose-500">
+                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Total Expenses (වියදම්)</span>
+                    <span class="p-2 bg-rose-500/10 text-rose-400 rounded-lg"><i class="fas fa-receipt"></i></span>
+                </div>
+                <div class="text-2xl font-black text-rose-400 font-mono">Rs. <span id="kpiExpenses">0.00</span></div>
+                <p class="text-[11px] text-slate-400 mt-2"><i class="fas fa-arrow-down text-rose-400"></i> බඩු ගෙන ඒම් සහ දැන්වීම් පිරිවැය</p>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-indigo-500">
+                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Net Profit (ශුද්ධ ලාභය)</span>
+                    <span class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg"><i class="fas fa-coins"></i></span>
+                </div>
+                <div class="text-2xl font-black text-indigo-400 font-mono">Rs. <span id="kpiProfit">0.00</span></div>
+                <p class="text-[11px] text-slate-400 mt-2" id="profitMarginLabel">Margin: 0%</p>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-l-4 border-l-amber-500">
+                <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                    <span>Pending Orders</span>
+                    <span class="p-2 bg-amber-500/10 text-amber-400 rounded-lg pulse-badge"><i class="fas fa-clock"></i></span>
+                </div>
+                <div class="text-2xl font-black text-amber-400 font-mono"><span id="kpiPending">0</span> Orders</div>
+                <p class="text-[11px] text-slate-400 mt-2">යැවීමට හෝ ලබාදීමට ඇති Orders</p>
+            </div>
+        </div>
+
+        <!-- Performance Analytics Graphs Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-card p-6 rounded-3xl lg:col-span-2">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-chart-area text-indigo-400"></i> Monthly Sales & Performance Trend
+                    </h2>
+                    <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">Real-Time Data</span>
+                </div>
+                <div class="relative h-64 sm:h-72 w-full">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-pink-400"></i> Order Status Breakdown
+                    </h2>
+                </div>
+                <div class="relative h-64 sm:h-72 w-full flex items-center justify-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forms & Table Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Order Input Form -->
+            <div class="lg:col-span-4 no-print space-y-6">
+                <div class="glass-card p-6 rounded-3xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-cart-plus text-pink-400"></i> නව Order එකක් ඇතුළත් කරන්න
+                        </h2>
+                    </div>
+
+                    <form id="orderForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Name / Phone</label>
+                            <input type="text" id="custName" placeholder="උදා: Sunimal Perera (0771234567)" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-pink-500" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Item / Service Details</label>
+                            <input type="text" id="itemDetails" placeholder="උදා: Smart Watch Series 8" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-pink-500" required>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Selling Price (Rs)</label>
+                                <input type="number" id="salePrice" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-pink-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Cost / Expense (Rs)</label>
+                                <input type="number" id="costPrice" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-pink-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Status</label>
+                                <select id="orderStatus" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-pink-500">
+                                    <option value="Completed">Completed</option>
+                                    <option value="Processing">Processing</option>
+                                    <option value="Pending" selected>Pending</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col justify-center items-center">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Paid Status</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="isPaidToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                            <i class="fas fa-plus-circle"></i> Save Order Record
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Orders Table Sheet -->
+            <div class="lg:col-span-8">
+                <div class="glass-card p-6 rounded-3xl overflow-hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700/60 pb-4 mb-4 gap-3">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-list-check text-indigo-400"></i> Orders & Sales Directory
+                        </h2>
+                        <span id="recordCount" class="text-xs font-bold bg-slate-800 text-indigo-300 px-3 py-1 rounded-full border border-slate-700">0 Records</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[650px]">
+                            <thead>
+                                <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
+                                    <th class="p-3">Customer & Item</th>
+                                    <th class="p-3 text-right">Sale Price</th>
+                                    <th class="p-3 text-right">Cost</th>
+                                    <th class="p-3 text-center">Status</th>
+                                    <th class="p-3 text-center">Paid</th>
+                                    <th class="p-3 text-center no-print">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody" class="text-sm divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="emptyState" class="text-center py-12 text-slate-500">
+                        <i class="fas fa-box-open text-5xl mb-3 text-slate-600"></i>
+                        <p class="text-sm">තවම කිසිදු Order එකක් ඇතුළත් කර නොමැත.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 1. ANTI-COPY & ANTI-INSPECT PROTECTION SCRIPT -->
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123) return false;
+            if (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 'I'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 'C'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 'J'.charCodeAt(0)) return false;
+            if (e.ctrlKey && e.keyCode === 'S'.charCodeAt(0)) return false;
+        };
+    </script>
+
+    <!-- 2. DEVICE-LOCK & LIVE GOOGLE DRIVE DATABASE SCRIPT -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientKey = urlParams.get('key');
+        const customEndpoint = urlParams.get('endpoint');
+
+        // ඔබගේ Google Web App Deployment URL එක පහත තබන්න:
+        const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzvEOijNAgkKmucXoNPWT6D0uESaVGl1zM70Wm03ql_ySepn1s9jwoud3_Go77HBQCW/exec";
+        const GOOGLE_SCRIPT_URL = customEndpoint ? decodeURIComponent(customEndpoint) : DEFAULT_ENDPOINT;
+
+        let isLicenseVerified = false;
+
+        (function() {
+            if (!clientKey) {
+                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL (e.g. ?key=biz_001)");
+                return;
+            }
+
+            const deviceFP = window.btoa(navigator.userAgent.replace(/\s+/g, '') + screen.width + "x" + screen.height);
+
+            fetch(`${GOOGLE_SCRIPT_URL}?key=${encodeURIComponent(clientKey)}&device=${encodeURIComponent(deviceFP)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "SUCCESS") {
+                        isLicenseVerified = true;
+                        if (data.cloudData && data.cloudData.trim().length > 0) {
+                            try {
+                                const parsedCloud = JSON.parse(data.cloudData);
+                                restoreStateFromCloud(parsedCloud);
+                            } catch(err) { console.error("Cloud Data Restore Error", err); }
+                        }
+                    } else {
+                        showBlocked("⛔ Access Denied!", data.message);
+                    }
+                })
+                .catch(err => {
+                    showBlocked("⛔ Verification Error", "Unable to connect to Google Drive verification server.");
+                });
+
+            function showBlocked(title, msg) {
+                document.body.innerHTML = `
+                    <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#0b1120; color:#ef4444; font-family:sans-serif; text-align:center; padding:20px;">
+                        <div style="background:#1e293b; padding:30px; border-radius:16px; border:1px solid #ef4444; max-width:420px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
+                            <h1 style="font-size:1.5rem; margin-bottom:12px; color:#ef4444;">${title}</h1>
+                            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">${msg}</p>
+                        </div>
+                    </div>`;
+            }
+        })();
+
+        function syncDataToCloud(statePayload) {
+            if (!clientKey || !isLicenseVerified) return;
+            const syncBadge = document.getElementById('syncBadge');
+            if (syncBadge) {
+                syncBadge.className = "sync-loading";
+                syncBadge.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Syncing...`;
+            }
+
+            const payload = encodeURIComponent(JSON.stringify(statePayload));
+            fetch(`${GOOGLE_SCRIPT_URL}?key=${encodeURIComponent(clientKey)}&action=save_data&payload=${payload}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (syncBadge) {
+                        syncBadge.className = "sync-success";
+                        syncBadge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Cloud Synced`;
+                    }
+                })
+                .catch(err => {
+                    if (syncBadge) {
+                        syncBadge.className = "sync-loading";
+                        syncBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Sync Failed`;
+                    }
+                });
+        }
+    </script>
+
+    <!-- 3. MAIN SYSTEM LOGIC & CHARTS SCRIPT -->
+    <script>
+        let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
+        let orders = JSON.parse(localStorage.getItem('biz_orders_data')) || [];
+        let revenueChartInstance = null;
+        let statusChartInstance = null;
+
+        const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Authentication PIN Handling
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputPin = document.getElementById('inputPin').value;
+            if (inputPin === savedPin) {
+                document.getElementById('authOverlay').classList.add('hidden');
+                document.getElementById('mainSystem').classList.remove('hidden');
+                renderApp();
+            } else {
+                alert('වැරදි PIN අංකයකි! (Incorrect PIN)');
+                document.getElementById('inputPin').value = '';
+            }
+        });
+
+        function lockSystem() {
+            document.getElementById('mainSystem').classList.add('hidden');
+            document.getElementById('authOverlay').classList.remove('hidden');
+        }
+
+        function changePinModal() {
+            const current = prompt('Enter Current PIN:');
+            if (current === savedPin) {
+                const newPin = prompt('Enter NEW PIN (Minimum 4 digits):');
+                if (newPin && newPin.trim().length >= 4) {
+                    savedPin = newPin.trim();
+                    localStorage.setItem('biz_sys_pin', savedPin);
+                    alert('PIN අංකය සාර්ථකව වෙනස් කරන ලදී!');
+                } else {
+                    alert('PIN අංකය අවම වශයෙන් ඉලක්කම් 4ක් විය යුතුය!');
+                }
+            } else if (current !== null) {
+                alert('වර්තමාන PIN අංකය වැරදියි!');
+            }
+        }
+
+        // Form Submission
+        document.getElementById('orderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newOrder = {
+                id: Date.now(),
+                custName: document.getElementById('custName').value,
+                itemDetails: document.getElementById('itemDetails').value,
+                salePrice: parseFloat(document.getElementById('salePrice').value) || 0,
+                costPrice: parseFloat(document.getElementById('costPrice').value) || 0,
+                status: document.getElementById('orderStatus').value,
+                isPaid: document.getElementById('isPaidToggle').checked,
+                date: new Date().toLocaleDateString()
+            };
+
+            orders.push(newOrder);
+            document.getElementById('orderForm').reset();
+            document.getElementById('isPaidToggle').checked = true;
+            saveAndSync();
+        });
+
+        function deleteOrder(id) {
+            if (confirm('මෙම Order වාර්තාව ඉවත් කිරීමට අවශ්‍යද?')) {
+                orders = orders.filter(o => o.id !== id);
+                saveAndSync();
+            }
+        }
+
+        function togglePaidStatus(id) {
+            const ord = orders.find(o => o.id === id);
+            if (ord) {
+                ord.isPaid = !ord.isPaid;
+                saveAndSync();
+            }
+        }
+
+        function updateOrderStatus(id, newStatus) {
+            const ord = orders.find(o => o.id === id);
+            if (ord) {
+                ord.status = newStatus;
+                saveAndSync();
+            }
+        }
+
+        function saveAndSync() {
+            localStorage.setItem('biz_orders_data', JSON.stringify(orders));
+            syncDataToCloud(orders);
+            renderApp();
+        }
+
+        function restoreStateFromCloud(cloudOrders) {
+            if (Array.isArray(cloudOrders)) {
+                orders = cloudOrders;
+                localStorage.setItem('biz_orders_data', JSON.stringify(orders));
+                renderApp();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('සියලුම Orders සහ Data ඉවත් කිරීමට අවශ්‍යද?')) {
+                orders = [];
+                saveAndSync();
+            }
+        }
+
+        function renderApp() {
+            const tbody = document.getElementById('ordersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            let totalRev = 0, totalCost = 0, pendingCount = 0;
+            let statusCounts = { Completed: 0, Processing: 0, Pending: 0, Cancelled: 0 };
+
+            if (orders.length === 0) emptyState.classList.remove('hidden');
+            else emptyState.classList.add('hidden');
+
+            orders.forEach(o => {
+                totalRev += o.salePrice;
+                totalCost += o.costPrice;
+
+                if (statusCounts[o.status] !== undefined) statusCounts[o.status]++;
+                if (o.status === 'Pending' || o.status === 'Processing') pendingCount++;
+
+                let statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                if (o.status === 'Completed') statusColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                if (o.status === 'Processing') statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                if (o.status === 'Cancelled') statusColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/50 transition border-b border-slate-800/80';
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="font-bold text-white">${o.custName}</div>
+                        <div class="text-xs text-indigo-400 mt-0.5">${o.itemDetails} <span class="text-slate-500">(${o.date})</span></div>
+                    </td>
+                    <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(o.salePrice)}</td>
+                    <td class="p-3 text-right font-mono text-slate-400">Rs. ${formatMoney(o.costPrice)}</td>
+                    <td class="p-3 text-center">
+                        <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border outline-none ${statusColor} bg-slate-900">
+                            <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="togglePaidStatus(${o.id})" class="text-xs px-2.5 py-1 rounded-full font-bold transition ${o.isPaid ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+                            ${o.isPaid ? 'Paid ✓' : 'Unpaid ✗'}
+                        </button>
+                    </td>
+                    <td class="p-3 text-center no-print">
+                        <button onclick="deleteOrder(${o.id})" class="text-slate-500 hover:text-rose-400 p-1.5 transition"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update KPI Cards
+            const netProfit = totalRev - totalCost;
+            const margin = totalRev > 0 ? ((netProfit / totalRev) * 100).toFixed(1) : 0;
+
+            document.getElementById('kpiRevenue').innerText = formatMoney(totalRev);
+            document.getElementById('kpiExpenses').innerText = formatMoney(totalCost);
+            document.getElementById('kpiProfit').innerText = formatMoney(netProfit);
+            document.getElementById('profitMarginLabel').innerText = `Profit Margin: ${margin}%`;
+            document.getElementById('kpiPending').innerText = pendingCount;
+            document.getElementById('recordCount').innerText = `${orders.length} Records`;
+
+            // Render Analytical Graphs
+            renderCharts(statusCounts);
+        }
+
+        function renderCharts(statusCounts) {
+            // 1. Order Status Doughnut Chart
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            if (statusChartInstance) statusChartInstance.destroy();
+
+            statusChartInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Processing', 'Pending', 'Cancelled'],
+                    datasets: [{
+                        data: [statusCounts.Completed, statusCounts.Processing, statusCounts.Pending, statusCounts.Cancelled],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }
+                }
+            });
+
+            // 2. Revenue Trend Bar Chart
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            if (revenueChartInstance) revenueChartInstance.destroy();
+
+            revenueChartInstance = new Chart(ctxRev, {
+                type: 'bar',
+                data: {
+                    labels: orders.slice(-7).map(o => o.custName.split(' ')[0]),
+                    datasets: [
+                        { label: 'Sale Amount (Rs)', data: orders.slice(-7).map(o => o.salePrice), backgroundColor: '#6366f1', borderRadius: 6 },
+                        { label: 'Cost Amount (Rs)', data: orders.slice(-7).map(o => o.costPrice), backgroundColor: '#f43f5e', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
