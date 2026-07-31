@@ -65,6 +65,20 @@
         .sync-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .sync-loading { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
+        /* FIXED HEIGHT TABLE CONTAINERS WITH STICKY FREEZED HEADER */
+        .table-scroll-container {
+            max-height: 420px;
+            overflow-y: auto;
+            border-radius: 0.75rem;
+        }
+
+        .table-scroll-container th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: #0f172a;
+        }
+
         /* PRINT STYLES FOR HIGH END INVOICE, SHIPPING STICKER & MONTHLY REPORT */
         @media print {
             body * { visibility: hidden; }
@@ -73,6 +87,7 @@
             .no-print-btn, footer { display: none !important; }
             .glass-card { background: white !important; border: 2px solid #000 !important; color: black !important; }
             .editable-field { border: none !important; outline: none !important; background: transparent !important; }
+            .table-scroll-container { max-height: none !important; overflow: visible !important; }
         }
     </style>
 </head>
@@ -223,18 +238,25 @@
                 </div>
             </div>
 
-            <!-- Stock Directory Table -->
+            <!-- Stock Directory Table with Search & Sticky Header -->
             <div class="lg:col-span-8">
                 <div class="glass-card p-6 rounded-3xl overflow-hidden">
-                    <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/60 pb-3 mb-4">
                         <h2 class="text-base font-bold text-white flex items-center gap-2">
                             <i class="fas fa-warehouse text-amber-400"></i> Stock & Item-Wise Profit Breakdown
                         </h2>
+                        <!-- SEARCH ITEM CODE ENGINE -->
+                        <div class="relative w-full sm:w-64">
+                            <i class="fas fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="stockSearchInput" onkeyup="filterStockTable()" placeholder="Search Item Code or Name..." class="w-full rounded-xl border border-slate-700 pl-8 pr-3 py-2 text-xs bg-slate-900 text-white outline-none focus:border-amber-400">
+                        </div>
                     </div>
-                    <div class="overflow-x-auto">
+
+                    <!-- FIXED HEIGHT CONTAINER WITH SCROLLBAR & STICKY HEADER -->
+                    <div class="table-scroll-container">
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
-                                <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
+                                <tr class="bg-slate-900 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
                                     <th class="p-3">Code & Name</th>
                                     <th class="p-3 text-right">Cost / Sale</th>
                                     <th class="p-3 text-right">Profit / Unit</th>
@@ -249,7 +271,7 @@
             </div>
         </div>
 
-        <!-- Sales Growth Graphs & Order Placement with Risk Warning & Payment Status -->
+        <!-- Sales Growth Graphs & Order Placement -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card p-6 rounded-3xl">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
@@ -260,7 +282,7 @@
                 </div>
             </div>
 
-            <!-- Order Placement Form with Smart Auto-Fill & Risk Rating Engine -->
+            <!-- Order Placement Form -->
             <div class="glass-card p-6 rounded-3xl no-print relative">
                 <div class="flex justify-between items-center mb-3 border-b border-slate-700/60 pb-3">
                     <h2 class="text-base font-bold text-white flex items-center gap-2">
@@ -269,7 +291,7 @@
                     <span id="custOrderHistoryBadge" class="hidden text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full"><i class="fas fa-history"></i> <span id="custOrderCount">0</span> Orders Tracked</span>
                 </div>
 
-                <!-- RISK WARNING BADGE ALERT (HIDDEN BY DEFAULT) -->
+                <!-- RISK WARNING BADGE ALERT -->
                 <div id="riskWarningAlert" class="hidden bg-rose-500/20 border border-rose-500/50 text-rose-300 p-3 rounded-xl mb-3 text-xs font-bold flex items-center gap-2 animate-pulse">
                     <i class="fas fa-triangle-exclamation text-base text-rose-400"></i>
                     <div>
@@ -429,17 +451,18 @@
             </div>
         </div>
 
-        <!-- Orders Directory -->
+        <!-- Orders Directory with Sticky Header & Scrollbar -->
         <div class="glass-card p-6 rounded-3xl overflow-hidden">
             <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
                 <h2 class="text-base font-bold text-white flex items-center gap-2">
                     <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & Payment Status
                 </h2>
             </div>
-            <div class="overflow-x-auto">
+            <!-- FIXED HEIGHT CONTAINER WITH SCROLLBAR & STICKY HEADER -->
+            <div class="table-scroll-container">
                 <table class="w-full text-left border-collapse min-w-[750px]">
                     <thead>
-                        <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
+                        <tr class="bg-slate-900 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
                             <th class="p-3">Order Details</th>
                             <th class="p-3">Customer & Address</th>
                             <th class="p-3 text-center">Payment Status</th>
@@ -713,7 +736,7 @@
 
         (function() {
             if (!clientKey) {
-                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL (e.g. ?key=biz_001)");
+                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL");
                 return;
             }
 
@@ -775,7 +798,7 @@
         }
     </script>
 
-    <!-- 3. MAIN SYSTEM APP LOGIC WITH RISK RATING & PAYMENT STATUS -->
+    <!-- 3. MAIN SYSTEM APP LOGIC WITH SEARCH & STICKY HEADERS -->
     <script>
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [];
@@ -788,6 +811,21 @@
         let currentActiveModalGross = 0;
 
         const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // LIVE STOCK TABLE SEARCH ENGINE BY ITEM CODE OR NAME
+        function filterStockTable() {
+            const input = document.getElementById('stockSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#stockTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
 
         // EXCEL TAB SWITCHER FUNCTION
         function switchTab(tabName) {
@@ -878,7 +916,6 @@
                 document.getElementById('custOrderCount').innerText = found.orderCount || 1;
                 historyBadge.classList.remove('hidden');
 
-                // CHECK FOR RISK / RETURN HISTORY
                 if (found.returnedCount > 0 || found.unpaidCount > 0) {
                     riskText.innerText = `මෙම පාරිභෝගිකයා මීට පෙර Order ${found.returnedCount || 0} ක් Return/Cancel කර ඇති අතර ${found.unpaidCount || 0} ක් Unpaid තත්වයේ ඇත!`;
                     riskAlert.classList.remove('hidden');
@@ -910,7 +947,6 @@
             const cAddr = document.getElementById('custAddress').value.trim();
             const payStatus = document.getElementById('orderPaymentStatus').value;
 
-            // SAVE OR UPDATE CUSTOMER BASE
             let existingCust = customerBase.find(c => c.name.toLowerCase() === cName.toLowerCase() || c.phone === cPhone);
             if (existingCust) {
                 existingCust.phone = cPhone;
@@ -1014,7 +1050,6 @@
             const oldStatus = ord.status;
 
             if ((newStatus === 'Cancelled' || newStatus === 'Returned') && (oldStatus !== 'Cancelled' && oldStatus !== 'Returned')) {
-                // INCREMENT CUSTOMER RETURN COUNT FOR RISK SYSTEM
                 let cust = customerBase.find(c => c.name.toLowerCase() === ord.custName.toLowerCase() || c.phone === ord.custPhone);
                 if (cust) {
                     cust.returnedCount = (cust.returnedCount || 0) + 1;
@@ -1288,6 +1323,8 @@
                     </tr>
                 `;
             });
+
+            filterStockTable();
 
             // Render Quotations Table
             const quoteBody = document.getElementById('quotationsTableBody');
