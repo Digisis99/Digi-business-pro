@@ -321,14 +321,12 @@
 
     </div>
 
-    <!-- MAIN SYSTEM FOOTER COPYRIGHT NOTICE -->
+    <!-- MAIN SYSTEM FOOTER COPYRIGHT NOTICE (CLEAN VERSION) -->
     <footer class="max-w-7xl mx-auto w-full text-center py-6 border-t border-slate-800/80 text-slate-500 text-xs space-y-1.5 no-print">
         <div class="flex flex-wrap items-center justify-center gap-3 font-semibold text-slate-400">
             <span><i class="fas fa-shield-halved text-indigo-400"></i> Proprietary System Engine</span>
             <span>•</span>
             <span><i class="fas fa-lock text-emerald-400"></i> Encrypted Device Lock</span>
-            <span>•</span>
-            <span id="footerLicenseKey" class="font-mono text-purple-400">License: Active</span>
         </div>
         <p>© 2026 <strong>Smart Business Pro OS</strong>. All Rights Reserved.</p>
         <p class="text-[10px] text-slate-600">Unauthorized copying, modification, or commercial distribution of this web application code is strictly prohibited.</p>
@@ -469,9 +467,6 @@
                 showBlocked("⛔ Access Denied!", "Valid License Key Required in URL");
                 return;
             }
-
-            const footerLic = document.getElementById('footerLicenseKey');
-            if(footerLic) footerLic.innerText = `License: ${clientKey}`;
 
             const deviceFP = window.btoa(navigator.userAgent.replace(/\s+/g, '') + screen.width + "x" + screen.height);
 
