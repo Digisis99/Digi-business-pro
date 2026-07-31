@@ -249,7 +249,7 @@
             </div>
         </div>
 
-        <!-- Sales Growth Graphs & Order Placement with Auto-Fill Customer Base -->
+        <!-- Sales Growth Graphs & Order Placement with Risk Warning & Payment Status -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card p-6 rounded-3xl">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
@@ -260,15 +260,25 @@
                 </div>
             </div>
 
-            <!-- Order Placement Form with Smart Auto-Fill -->
-            <div class="glass-card p-6 rounded-3xl no-print">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
+            <!-- Order Placement Form with Smart Auto-Fill & Risk Rating Engine -->
+            <div class="glass-card p-6 rounded-3xl no-print relative">
+                <div class="flex justify-between items-center mb-3 border-b border-slate-700/60 pb-3">
                     <h2 class="text-base font-bold text-white flex items-center gap-2">
                         <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න
                     </h2>
                     <span id="custOrderHistoryBadge" class="hidden text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full"><i class="fas fa-history"></i> <span id="custOrderCount">0</span> Orders Tracked</span>
                 </div>
-                <form id="orderForm" class="space-y-4">
+
+                <!-- RISK WARNING BADGE ALERT (HIDDEN BY DEFAULT) -->
+                <div id="riskWarningAlert" class="hidden bg-rose-500/20 border border-rose-500/50 text-rose-300 p-3 rounded-xl mb-3 text-xs font-bold flex items-center gap-2 animate-pulse">
+                    <i class="fas fa-triangle-exclamation text-base text-rose-400"></i>
+                    <div>
+                        <span class="block text-white font-extrabold">⚠️ HIGH RISK CUSTOMER ALERT!</span>
+                        <span id="riskWarningText">මෙම පාරිභෝගිකයා මීට පෙර Order එකක් Return/Cancel කර ඇත!</span>
+                    </div>
+                </div>
+
+                <form id="orderForm" class="space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Name (Auto-Suggest)</label>
@@ -292,15 +302,24 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Payment Status</label>
+                            <select id="orderPaymentStatus" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500 font-bold">
+                                <option value="Paid" class="text-emerald-400">Paid (ගෙවා ඇත)</option>
+                                <option value="Pending" class="text-amber-400" selected>Pending (COD / COD)</option>
+                                <option value="Unpaid" class="text-rose-400">Unpaid (ණය / ගෙවා නැත)</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Courier / Tracking Ref</label>
                             <input type="text" id="trackingRef" placeholder="Tracking No..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address</label>
-                            <input type="text" id="custAddress" placeholder="Address..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
-                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address</label>
+                        <input type="text" id="custAddress" placeholder="Address..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
                     </div>
 
                     <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
@@ -310,7 +329,7 @@
             </div>
         </div>
 
-        <!-- EXCEL STYLE TAB SYSTEM FOR INVOICES/QUOTATIONS & INQUIRIES & CUSTOMER BASE -->
+        <!-- EXCEL STYLE TAB SYSTEM FOR INVOICES/QUOTATIONS, CUSTOMER TRACKER & INQUIRIES -->
         <div class="glass-card p-6 rounded-3xl space-y-4 no-print border border-slate-700/80">
             <!-- EXCEL TAB BUTTONS -->
             <div class="flex items-center gap-2 border-b border-slate-700/80 pb-3 overflow-x-auto">
@@ -318,7 +337,7 @@
                     <i class="fas fa-file-invoice"></i> 🧾 Invoices & Quotations Sheet
                 </button>
                 <button onclick="switchTab('customers')" id="tabBtnCustomers" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap">
-                    <i class="fas fa-users-gear"></i> 👥 Customer Base Tracker
+                    <i class="fas fa-users-gear"></i> 👥 Customer Base & Risk Tracker
                 </button>
                 <button onclick="switchTab('inquiries')" id="tabBtnInquiries" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-comments"></i> 📩 Customer Inquiries Sheet
@@ -361,20 +380,21 @@
                 </div>
             </div>
 
-            <!-- SHEET 2: CUSTOMER BASE TRACKER -->
+            <!-- SHEET 2: CUSTOMER BASE & RISK TRACKER -->
             <div id="tabContentCustomers" class="hidden space-y-4">
                 <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                    <h3 class="text-xs font-bold uppercase text-emerald-400 tracking-wider flex items-center gap-2"><i class="fas fa-users"></i> Saved Customer Database & Order Track</h3>
+                    <h3 class="text-xs font-bold uppercase text-emerald-400 tracking-wider flex items-center gap-2"><i class="fas fa-users"></i> Saved Customer Database & Risk Rating</h3>
                     <span class="text-xs text-slate-400 font-mono">Total Saved Customers: <strong id="totalCustomersCount" class="text-white">0</strong></span>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
+                    <table class="w-full text-left text-xs border-collapse min-w-[700px]">
                         <thead>
                             <tr class="bg-slate-900/90 text-slate-400 uppercase font-bold border-b border-slate-700">
                                 <th class="p-3">Customer Name</th>
                                 <th class="p-3">Phone Number</th>
                                 <th class="p-3">Delivery Address</th>
-                                <th class="p-3 text-center">Total Orders Placed</th>
+                                <th class="p-3 text-center">Orders Breakdown</th>
+                                <th class="p-3 text-center">Risk / Trust Rating</th>
                             </tr>
                         </thead>
                         <tbody id="customerTableBody" class="divide-y divide-slate-800"></tbody>
@@ -413,7 +433,7 @@
         <div class="glass-card p-6 rounded-3xl overflow-hidden">
             <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
                 <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & Return Handler
+                    <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & Payment Status
                 </h2>
             </div>
             <div class="overflow-x-auto">
@@ -422,8 +442,8 @@
                         <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
                             <th class="p-3">Order Details</th>
                             <th class="p-3">Customer & Address</th>
-                            <th class="p-3 text-right">Order Profit</th>
-                            <th class="p-3 text-center">Status & Return Action</th>
+                            <th class="p-3 text-center">Payment Status</th>
+                            <th class="p-3 text-center">Delivery Status & Return Action</th>
                             <th class="p-3 text-center no-print">WhatsApp & Sticker</th>
                         </tr>
                     </thead>
@@ -434,7 +454,7 @@
 
     </div>
 
-    <!-- MAIN SYSTEM FOOTER COPYRIGHT NOTICE (CLEAN VERSION) -->
+    <!-- MAIN SYSTEM FOOTER COPYRIGHT NOTICE -->
     <footer class="max-w-7xl mx-auto w-full text-center py-6 border-t border-slate-800/80 text-slate-500 text-xs space-y-1.5 no-print">
         <div class="flex flex-wrap items-center justify-center gap-3 font-semibold text-slate-400">
             <span><i class="fas fa-shield-halved text-indigo-400"></i> Proprietary System Engine</span>
@@ -755,7 +775,7 @@
         }
     </script>
 
-    <!-- 3. MAIN SYSTEM APP LOGIC WITH CUSTOMER BASE AUTO-FILL -->
+    <!-- 3. MAIN SYSTEM APP LOGIC WITH RISK RATING & PAYMENT STATUS -->
     <script>
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [];
@@ -844,22 +864,34 @@
             saveAndSync();
         });
 
-        // SMART CUSTOMER AUTO-FILL & TRACKING ENGINE
+        // SMART CUSTOMER AUTO-FILL & RISK ALERT ENGINE
         function handleCustomerAutoFill(val) {
-            const badge = document.getElementById('custOrderHistoryBadge');
+            const historyBadge = document.getElementById('custOrderHistoryBadge');
+            const riskAlert = document.getElementById('riskWarningAlert');
+            const riskText = document.getElementById('riskWarningText');
+
             const found = customerBase.find(c => c.name.toLowerCase() === val.trim().toLowerCase());
             
             if (found) {
                 document.getElementById('custPhone').value = found.phone || '';
                 document.getElementById('custAddress').value = found.address || '';
                 document.getElementById('custOrderCount').innerText = found.orderCount || 1;
-                badge.classList.remove('hidden');
+                historyBadge.classList.remove('hidden');
+
+                // CHECK FOR RISK / RETURN HISTORY
+                if (found.returnedCount > 0 || found.unpaidCount > 0) {
+                    riskText.innerText = `මෙම පාරිභෝගිකයා මීට පෙර Order ${found.returnedCount || 0} ක් Return/Cancel කර ඇති අතර ${found.unpaidCount || 0} ක් Unpaid තත්වයේ ඇත!`;
+                    riskAlert.classList.remove('hidden');
+                } else {
+                    riskAlert.classList.add('hidden');
+                }
             } else {
-                badge.classList.add('hidden');
+                historyBadge.classList.add('hidden');
+                riskAlert.classList.add('hidden');
             }
         }
 
-        // Place Order & Save/Update Customer Base
+        // Place Order & Save/Update Customer Base with Payment Status
         document.getElementById('orderForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('orderItemSelect').value);
@@ -876,6 +908,7 @@
             const cName = document.getElementById('custName').value.trim();
             const cPhone = document.getElementById('custPhone').value.trim();
             const cAddr = document.getElementById('custAddress').value.trim();
+            const payStatus = document.getElementById('orderPaymentStatus').value;
 
             // SAVE OR UPDATE CUSTOMER BASE
             let existingCust = customerBase.find(c => c.name.toLowerCase() === cName.toLowerCase() || c.phone === cPhone);
@@ -883,13 +916,16 @@
                 existingCust.phone = cPhone;
                 existingCust.address = cAddr;
                 existingCust.orderCount = (existingCust.orderCount || 0) + 1;
+                if (payStatus === 'Unpaid') existingCust.unpaidCount = (existingCust.unpaidCount || 0) + 1;
             } else {
                 customerBase.push({
                     id: Date.now(),
                     name: cName,
                     phone: cPhone,
                     address: cAddr,
-                    orderCount: 1
+                    orderCount: 1,
+                    returnedCount: 0,
+                    unpaidCount: payStatus === 'Unpaid' ? 1 : 0
                 });
             }
 
@@ -908,6 +944,7 @@
                 orderQty: reqQty,
                 price: totalItemSale,
                 profit: totalOrderProfit,
+                paymentStatus: payStatus,
                 trackingRef: document.getElementById('trackingRef').value || 'Pending',
                 status: 'Processing',
                 date: new Date().toLocaleDateString()
@@ -916,6 +953,7 @@
             orders.push(newOrder);
             document.getElementById('orderForm').reset();
             document.getElementById('custOrderHistoryBadge').classList.add('hidden');
+            document.getElementById('riskWarningAlert').classList.add('hidden');
             saveAndSync();
         });
 
@@ -933,7 +971,7 @@
             saveAndSync();
         });
 
-        // Add Quotation & Open Preview with Discount & VAT
+        // Add Quotation & Open Preview
         document.getElementById('quotationForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('quoteItemSelect').value);
@@ -968,7 +1006,7 @@
             openInvoiceModal(quoteObj, 'QUOTATION');
         });
 
-        // Smart Return & Cancellation Handler
+        // UPDATE ORDER STATUS & RISK TRACKING ON RETURN/CANCEL
         function updateOrderStatus(id, newStatus) {
             const ord = orders.find(o => o.id === id);
             if (!ord) return;
@@ -976,6 +1014,12 @@
             const oldStatus = ord.status;
 
             if ((newStatus === 'Cancelled' || newStatus === 'Returned') && (oldStatus !== 'Cancelled' && oldStatus !== 'Returned')) {
+                // INCREMENT CUSTOMER RETURN COUNT FOR RISK SYSTEM
+                let cust = customerBase.find(c => c.name.toLowerCase() === ord.custName.toLowerCase() || c.phone === ord.custPhone);
+                if (cust) {
+                    cust.returnedCount = (cust.returnedCount || 0) + 1;
+                }
+
                 const isDamaged = confirm(`මෙම Order එක Cancelled/Returned ලෙස සටහන් විය.\n\nමෙම භාණ්ඩය හානි වී තිබේද (Damaged/Cannot Resell)?\n- OK ක්ලික් කළහොත්: Damaged ලෙස සටහන් වේ (Stock එකට එකතු නොවේ)\n- Cancel ක්ලික් කළහොත්: ආපසු Stock එකට එකතු වේ (Restocked)`);
 
                 if (isDamaged) {
@@ -994,6 +1038,19 @@
             saveAndSync();
         }
 
+        // UPDATE PAYMENT STATUS FOR AN ORDER
+        function updatePaymentStatus(id, newPaymentStatus) {
+            const ord = orders.find(o => o.id === id);
+            if (ord) {
+                ord.paymentStatus = newPaymentStatus;
+                let cust = customerBase.find(c => c.name.toLowerCase() === ord.custName.toLowerCase());
+                if (cust && newPaymentStatus === 'Paid' && cust.unpaidCount > 0) {
+                    cust.unpaidCount--;
+                }
+                saveAndSync();
+            }
+        }
+
         function deleteStock(id) {
             if (confirm('මෙම Stock අයිතමය ඉවත් කිරීමට අවශ්‍යද?')) {
                 inventory = inventory.filter(i => i.id !== id);
@@ -1004,7 +1061,7 @@
         function sendWhatsAppMsg(id) {
             const ord = orders.find(o => o.id === id);
             if (ord) {
-                let msg = `👋 *Hello ${ord.custName}*,\n\nඔබගේ Order එකෙහි විස්තර පහත දැක්වේ:\n📦 *Item:* ${ord.itemName} (Qty: ${ord.orderQty})\n💰 *Price:* Rs. ${formatMoney(ord.price)}\n🚚 *Status:* ${ord.status}\n📌 *Tracking No:* ${ord.trackingRef}\n\nස්තූතියි!`;
+                let msg = `👋 *Hello ${ord.custName}*,\n\nඔබගේ Order එකෙහි විස්තර පහත දැක්වේ:\n📦 *Item:* ${ord.itemName} (Qty: ${ord.orderQty})\n💰 *Price:* Rs. ${formatMoney(ord.price)}\n💳 *Payment Status:* ${ord.paymentStatus || 'Pending'}\n🚚 *Status:* ${ord.status}\n📌 *Tracking No:* ${ord.trackingRef}\n\nස්තූතියි!`;
                 window.open(`https://wa.me/${ord.custPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
             }
         }
@@ -1159,17 +1216,29 @@
                 custDatalist.innerHTML += `<option value="${c.name}">${c.phone} - ${c.address} (${c.orderCount || 1} Orders)</option>`;
             });
 
-            // Render Customer Table Sheet
+            // Render Customer Table Sheet with Risk Rating Badges
             const custTableBody = document.getElementById('customerTableBody');
             if (custTableBody) {
                 custTableBody.innerHTML = '';
                 customerBase.forEach(c => {
+                    let riskBadge = `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-bold">Good Customer ✓</span>`;
+                    
+                    if ((c.returnedCount || 0) > 0) {
+                        riskBadge = `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/40 px-2.5 py-1 rounded-full text-xs font-bold animate-pulse">⚠️ High Risk (Returns)</span>`;
+                    } else if ((c.unpaidCount || 0) > 0) {
+                        riskBadge = `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-bold">⚠️ Unpaid Orders</span>`;
+                    }
+
                     custTableBody.innerHTML += `
                         <tr class="border-b border-slate-800 hover:bg-slate-800/40">
-                            <td class="p-3 font-bold text-white flex items-center gap-2"><i class="fas fa-circle-user text-emerald-400"></i> ${c.name}</td>
+                            <td class="p-3 font-bold text-white flex items-center gap-2"><i class="fas fa-circle-user text-indigo-400"></i> ${c.name}</td>
                             <td class="p-3 font-mono text-slate-300">${c.phone}</td>
                             <td class="p-3 text-slate-400">${c.address}</td>
-                            <td class="p-3 text-center"><span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-mono font-bold">${c.orderCount || 1} Orders</span></td>
+                            <td class="p-3 text-center font-mono">
+                                <span class="text-emerald-400 font-bold">${c.orderCount || 1} Orders</span> 
+                                ${c.returnedCount ? `<br><span class="text-rose-400 text-[10px]">(${c.returnedCount} Returned)</span>` : ''}
+                            </td>
+                            <td class="p-3 text-center">${riskBadge}</td>
                         </tr>`;
                 });
                 document.getElementById('totalCustomersCount').innerText = customerBase.length;
@@ -1270,6 +1339,8 @@
                     totalNetProfit += (o.profit || 0);
                 }
 
+                const currentPayStatus = o.paymentStatus || 'Pending';
+
                 ordersBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
                         <td class="p-3">
@@ -1280,7 +1351,13 @@
                             <div class="font-bold text-slate-200">${o.custName} (${o.custPhone})</div>
                             <div class="text-xs text-slate-400 truncate max-w-[200px]">${o.custAddress}</div>
                         </td>
-                        <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(o.profit || 0)}</td>
+                        <td class="p-3 text-center">
+                            <select onchange="updatePaymentStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 ${currentPayStatus === 'Paid' ? 'text-emerald-400' : (currentPayStatus === 'Unpaid' ? 'text-rose-400' : 'text-amber-400')}">
+                                <option value="Paid" ${currentPayStatus === 'Paid' ? 'selected' : ''}>Paid ✓</option>
+                                <option value="Pending" ${currentPayStatus === 'Pending' ? 'selected' : ''}>Pending ⏳</option>
+                                <option value="Unpaid" ${currentPayStatus === 'Unpaid' ? 'selected' : ''}>Unpaid ණය ✖</option>
+                            </select>
+                        </td>
                         <td class="p-3 text-center">
                             <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-white">
                                 <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
