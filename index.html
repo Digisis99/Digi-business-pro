@@ -72,6 +72,7 @@
             #invoiceModal, #shippingStickerModal, #monthlyReportModal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
             .no-print-btn, footer { display: none !important; }
             .glass-card { background: white !important; border: 2px solid #000 !important; color: black !important; }
+            .editable-field { border: none !important; outline: none !important; background: transparent !important; }
         }
     </style>
 </head>
@@ -187,13 +188,19 @@
                         </h2>
                     </div>
                     <form id="stockForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Name</label>
-                            <input type="text" id="stockItemName" placeholder="Product Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Item Code</label>
+                                <input type="text" id="stockItemCode" placeholder="SKU-01" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Name</label>
+                                <input type="text" id="stockItemName" placeholder="Product Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Variant (Size / Colour / Model)</label>
-                            <input type="text" id="stockVariant" placeholder="e.g. Size: XL, Colour: Red, 60x60" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Variant / Description Details</label>
+                            <input type="text" id="stockVariant" placeholder="e.g. Size: XL, Colour: Red, 60x60 Specs" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
@@ -228,7 +235,7 @@
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
                                 <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
-                                    <th class="p-3">Item Name & Variant</th>
+                                    <th class="p-3">Code & Name</th>
                                     <th class="p-3 text-right">Cost / Sale</th>
                                     <th class="p-3 text-right">Profit / Unit</th>
                                     <th class="p-3 text-center">Available Stock</th>
@@ -242,7 +249,7 @@
             </div>
         </div>
 
-        <!-- Sales Growth Graphs & Order Placement -->
+        <!-- Sales Growth Graphs & Order Placement with Auto-Fill Customer Base -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card p-6 rounded-3xl">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
@@ -253,19 +260,23 @@
                 </div>
             </div>
 
-            <!-- Order Placement Form -->
+            <!-- Order Placement Form with Smart Auto-Fill -->
             <div class="glass-card p-6 rounded-3xl no-print">
-                <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
-                    <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න
-                </h2>
+                <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-3">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න
+                    </h2>
+                    <span id="custOrderHistoryBadge" class="hidden text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full"><i class="fas fa-history"></i> <span id="custOrderCount">0</span> Orders Tracked</span>
+                </div>
                 <form id="orderForm" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Name</label>
-                            <input type="text" id="custName" placeholder="Customer Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Name (Auto-Suggest)</label>
+                            <input type="text" id="custName" list="customerSuggestList" oninput="handleCustomerAutoFill(this.value)" placeholder="Customer Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required autocomplete="off">
+                            <datalist id="customerSuggestList"></datalist>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">WhatsApp Phone (947XXXXXXXX)</label>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">WhatsApp Phone</label>
                             <input type="text" id="custPhone" placeholder="947XXXXXXXX" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
                         </div>
                     </div>
@@ -299,19 +310,22 @@
             </div>
         </div>
 
-        <!-- EXCEL STYLE TAB SYSTEM FOR INVOICES/QUOTATIONS & INQUIRIES -->
+        <!-- EXCEL STYLE TAB SYSTEM FOR INVOICES/QUOTATIONS & INQUIRIES & CUSTOMER BASE -->
         <div class="glass-card p-6 rounded-3xl space-y-4 no-print border border-slate-700/80">
             <!-- EXCEL TAB BUTTONS -->
-            <div class="flex items-center gap-2 border-b border-slate-700/80 pb-3">
-                <button onclick="switchTab('quotes')" id="tabBtnQuotes" class="px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transition flex items-center gap-2">
+            <div class="flex items-center gap-2 border-b border-slate-700/80 pb-3 overflow-x-auto">
+                <button onclick="switchTab('quotes')" id="tabBtnQuotes" class="px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-file-invoice"></i> 🧾 Invoices & Quotations Sheet
                 </button>
-                <button onclick="switchTab('inquiries')" id="tabBtnInquiries" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2">
+                <button onclick="switchTab('customers')" id="tabBtnCustomers" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-users-gear"></i> 👥 Customer Base Tracker
+                </button>
+                <button onclick="switchTab('inquiries')" id="tabBtnInquiries" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-comments"></i> 📩 Customer Inquiries Sheet
                 </button>
             </div>
 
-            <!-- SHEET 1: ADVANCED INVOICES & QUOTATIONS WITH DISCOUNT -->
+            <!-- SHEET 1: ADVANCED INVOICES & QUOTATIONS WITH VAT & EDITABLE DISCOUNT -->
             <div id="tabContentQuotes" class="space-y-4">
                 <form id="quotationForm" class="space-y-3 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
                     <h3 class="text-xs font-bold uppercase text-indigo-400 tracking-wider flex items-center gap-2"><i class="fas fa-pen-to-square"></i> Issue Advanced Quotation & Invoice</h3>
@@ -319,10 +333,11 @@
                         <input type="text" id="quoteCustName" placeholder="Customer Name..." class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
                         <input type="text" id="quoteCustPhone" placeholder="WhatsApp Phone (947XXXXXXXX)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
                         <select id="quoteItemSelect" class="sm:col-span-2 rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required></select>
                         <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
                         <input type="number" id="quoteDiscount" min="0" value="0" step="any" placeholder="Discount (Rs.)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500">
+                        <input type="number" id="quoteVat" min="0" value="0" step="any" placeholder="VAT %" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500">
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
                         <i class="fas fa-receipt"></i> Issue Quotation / Invoice & Preview Advanced Bill
@@ -335,8 +350,8 @@
                             <tr class="bg-slate-900/90 text-slate-400 uppercase font-bold border-b border-slate-700">
                                 <th class="p-3">Date</th>
                                 <th class="p-3">Customer Details</th>
-                                <th class="p-3">Item Description</th>
-                                <th class="p-3 text-right">Subtotal & Discount</th>
+                                <th class="p-3">Item Code & Description</th>
+                                <th class="p-3 text-right">Subtotal, Disc & VAT</th>
                                 <th class="p-3 text-right">Net Amount</th>
                                 <th class="p-3 text-center">Print / Invoice Action</th>
                             </tr>
@@ -346,7 +361,28 @@
                 </div>
             </div>
 
-            <!-- SHEET 2: INQUIRIES -->
+            <!-- SHEET 2: CUSTOMER BASE TRACKER -->
+            <div id="tabContentCustomers" class="hidden space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold uppercase text-emerald-400 tracking-wider flex items-center gap-2"><i class="fas fa-users"></i> Saved Customer Database & Order Track</h3>
+                    <span class="text-xs text-slate-400 font-mono">Total Saved Customers: <strong id="totalCustomersCount" class="text-white">0</strong></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/90 text-slate-400 uppercase font-bold border-b border-slate-700">
+                                <th class="p-3">Customer Name</th>
+                                <th class="p-3">Phone Number</th>
+                                <th class="p-3">Delivery Address</th>
+                                <th class="p-3 text-center">Total Orders Placed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SHEET 3: INQUIRIES -->
             <div id="tabContentInquiries" class="hidden space-y-4">
                 <form id="inquiryForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
                     <h3 class="sm:col-span-2 text-xs font-bold uppercase text-purple-400 tracking-wider"><i class="fas fa-user-plus"></i> Record Customer Inquiry / Need</h3>
@@ -454,68 +490,76 @@
         </div>
     </div>
 
-    <!-- HIGH-QUALITY ADVANCED COLORED INVOICE & QUOTATION PRINT/PREVIEW MODAL -->
+    <!-- HIGH-QUALITY ADVANCED EDITABLE INVOICE & QUOTATION PRINT/PREVIEW MODAL -->
     <div id="invoiceModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white text-slate-900 p-8 rounded-3xl max-w-2xl w-full border-2 border-indigo-900 space-y-6 shadow-2xl relative overflow-hidden">
-            <!-- Header with Gradient Accent -->
-            <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white p-6 -m-8 mb-4 rounded-t-3xl flex justify-between items-center shadow-lg">
+        <div class="bg-white text-slate-900 p-8 rounded-3xl max-w-2xl w-full border-2 border-indigo-900 space-y-5 shadow-2xl relative overflow-hidden">
+            <!-- Header with Editable Business Name & Details -->
+            <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white p-6 -m-8 mb-3 rounded-t-3xl flex justify-between items-center shadow-lg">
                 <div>
                     <h1 id="invModalType" class="text-3xl font-black uppercase tracking-wider text-amber-400">INVOICE</h1>
                     <p class="text-xs font-mono text-indigo-200 mt-1">Ref: <span id="invModalRef">#INV-000</span> | Date: <span id="invModalDate"></span></p>
                 </div>
-                <div class="text-right">
-                    <h2 class="font-black text-lg tracking-tight text-white">SMART BUSINESS PRO OS</h2>
-                    <p class="text-[11px] text-indigo-200 font-medium uppercase tracking-wider">Official Bill & Statement</p>
+                <div class="text-right max-w-[260px]">
+                    <input type="text" id="invModalBizName" value="SMART BUSINESS PRO OS" class="font-black text-right text-base text-white bg-transparent border-b border-indigo-400/50 focus:border-amber-400 outline-none w-full editable-field" placeholder="Business Name">
+                    <input type="text" id="invModalBizAddress" value="No 123, Main Street, Colombo, Sri Lanka" class="text-[10px] text-right text-indigo-200 bg-transparent border-b border-transparent focus:border-indigo-300 outline-none w-full mt-0.5 editable-field" placeholder="Business Address / Contact">
                 </div>
             </div>
 
-            <!-- Customer & Company Info Box -->
-            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <!-- Customer Details Box -->
+            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                 <div>
                     <span class="font-bold text-indigo-900 uppercase tracking-wider block mb-1">BILLED TO / CUSTOMER:</span>
                     <p id="invModalCustName" class="font-black text-sm text-slate-900"></p>
                     <p id="invModalCustPhone" class="font-mono font-bold text-slate-700 mt-0.5"></p>
                 </div>
                 <div class="text-right border-l pl-4 border-slate-300">
-                    <span class="font-bold text-indigo-900 uppercase tracking-wider block mb-1">PAYMENT STATUS:</span>
-                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-300 text-[11px]">OFFICIAL QUOTATION / BILL</span>
+                    <span class="font-bold text-indigo-900 uppercase tracking-wider block mb-1">STATUS:</span>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-300 text-[10px]">OFFICIAL STATEMENT</span>
                 </div>
             </div>
 
-            <!-- Detailed Items Table -->
+            <!-- Detailed Table with Item Code & Description -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
                         <tr class="bg-indigo-950 text-white font-bold">
-                            <th class="p-2.5 rounded-l-lg">Item Description</th>
-                            <th class="p-2.5 text-center">Unit / Size</th>
+                            <th class="p-2.5 rounded-l-lg">Item Code</th>
+                            <th class="p-2.5">Item Description</th>
                             <th class="p-2.5 text-center">Qty</th>
-                            <th class="p-2.5 text-right">Rate (Rs.)</th>
+                            <th class="p-2.5 text-right">Unit Rate (Rs.)</th>
                             <th class="p-2.5 text-right rounded-r-lg">Amount (Rs.)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="border-b border-slate-200">
-                            <td id="invModalItemDesc" class="p-3 font-bold text-slate-900"></td>
-                            <td id="invModalUnit" class="p-3 text-center text-slate-600 font-medium">Standard</td>
-                            <td id="invModalQty" class="p-3 text-center font-mono font-bold text-slate-900"></td>
-                            <td id="invModalRate" class="p-3 text-right font-mono font-bold text-slate-800"></td>
-                            <td id="invModalSubTotal" class="p-3 text-right font-mono font-bold text-slate-900"></td>
+                            <td id="invModalItemCode" class="p-3 font-mono font-bold text-indigo-900">SKU-01</td>
+                            <td id="invModalItemDesc" class="p-3 font-bold text-slate-900">Product Description</td>
+                            <td id="invModalQty" class="p-3 text-center font-mono font-bold text-slate-900">1</td>
+                            <td id="invModalRate" class="p-3 text-right font-mono font-bold text-slate-800">0.00</td>
+                            <td id="invModalSubTotal" class="p-3 text-right font-mono font-bold text-slate-900">0.00</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Totals & Discount Breakdown Panel -->
-            <div class="flex justify-end pt-2">
-                <div class="w-64 space-y-1.5 text-xs font-mono">
+            <!-- Totals, Editable Discount & VAT Panel -->
+            <div class="flex justify-end pt-1">
+                <div class="w-72 space-y-1.5 text-xs font-mono">
                     <div class="flex justify-between text-slate-600">
                         <span>Sub Total:</span>
                         <span id="invModalCalcSubTotal" class="font-bold">Rs. 0.00</span>
                     </div>
-                    <div class="flex justify-between text-rose-600 font-bold">
+                    <div class="flex justify-between items-center text-rose-600 font-bold">
                         <span>Discount (-):</span>
-                        <span id="invModalDiscount">Rs. 0.00</span>
+                        <div class="flex items-center gap-1">
+                            Rs. <input type="number" id="invModalEditDiscount" value="0" min="0" step="any" oninput="recalculateModalTotals()" class="w-20 text-right font-mono border border-rose-200 rounded px-1 py-0.5 text-xs bg-rose-50 outline-none editable-field">
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-indigo-700 font-bold">
+                        <span>VAT Tax (+):</span>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="invModalEditVat" value="0" min="0" step="any" oninput="recalculateModalTotals()" class="w-12 text-right font-mono border border-indigo-200 rounded px-1 py-0.5 text-xs bg-indigo-50 outline-none editable-field">% = <span id="invModalVatAmount">Rs. 0.00</span>
+                        </div>
                     </div>
                     <div class="flex justify-between text-base font-black text-indigo-950 pt-2 border-t-2 border-slate-900">
                         <span>NET TOTAL:</span>
@@ -524,22 +568,33 @@
                 </div>
             </div>
 
-            <!-- Terms & Authorized Signature Line -->
-            <div class="pt-6 border-t border-slate-200 grid grid-cols-2 gap-4 text-[11px] text-slate-500">
+            <!-- Terms & Payment Details Section -->
+            <div class="grid grid-cols-2 gap-4 text-[10px] bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div>
-                    <p class="font-bold text-slate-700">Thank you for your business!</p>
-                    <p>Computer-generated invoice. No signature required for validation.</p>
+                    <span class="font-bold text-indigo-950 uppercase block mb-1">PAYMENT DETAILS & BANK INFO:</span>
+                    <textarea id="invModalPaymentDetails" class="w-full bg-transparent border-none outline-none resize-none font-mono text-slate-700 leading-tight editable-field" rows="2">Bank: Bank of Ceylon | Account No: 1234567890 | Name: Smart Business</textarea>
                 </div>
-                <div class="text-right pt-4">
+                <div>
+                    <span class="font-bold text-indigo-950 uppercase block mb-1">TERMS & CONDITIONS:</span>
+                    <textarea id="invModalTerms" class="w-full bg-transparent border-none outline-none resize-none font-mono text-slate-700 leading-tight editable-field" rows="2">1. Valid for 14 days from issue. 2. Non-refundable after delivery.</textarea>
+                </div>
+            </div>
+
+            <!-- Thank You Message & Authorized Signature -->
+            <div class="pt-2 flex justify-between items-end border-t border-slate-200 text-xs">
+                <div>
+                    <p class="font-black text-indigo-900 italic text-sm">Thank you for doing business with us!</p>
+                </div>
+                <div class="text-right">
                     <div class="border-b border-slate-400 w-36 ml-auto mb-1"></div>
-                    <p class="font-bold text-slate-700">Authorized Signature</p>
+                    <p class="font-bold text-slate-700 text-[10px]">Authorized Signature</p>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex gap-2 no-print-btn pt-2">
                 <button onclick="window.print()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2"><i class="fas fa-print"></i> Print Professional Bill / PDF</button>
-                <button onclick="closeInvoiceModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-3 rounded-xl text-xs hover:bg-slate-300 transition">Close</button>
+                <button onclick="closeInvoiceModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-2 rounded-xl text-xs hover:bg-slate-300 transition">Close</button>
             </div>
         </div>
     </div>
@@ -638,7 +693,7 @@
 
         (function() {
             if (!clientKey) {
-                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL");
+                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL (e.g. ?key=biz_001)");
                 return;
             }
 
@@ -700,35 +755,46 @@
         }
     </script>
 
-    <!-- 3. MAIN SYSTEM APP LOGIC -->
+    <!-- 3. MAIN SYSTEM APP LOGIC WITH CUSTOMER BASE AUTO-FILL -->
     <script>
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [];
         let orders = JSON.parse(localStorage.getItem('biz_orders_data')) || [];
         let inquiries = JSON.parse(localStorage.getItem('biz_inquiries_data')) || [];
         let quotations = JSON.parse(localStorage.getItem('biz_quotations_data')) || [];
+        let customerBase = JSON.parse(localStorage.getItem('biz_customer_base')) || [];
         let damagedItemsCount = parseInt(localStorage.getItem('biz_damaged_qty')) || 0;
         let salesChartInstance = null;
+        let currentActiveModalGross = 0;
 
         const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         // EXCEL TAB SWITCHER FUNCTION
         function switchTab(tabName) {
             const btnQ = document.getElementById('tabBtnQuotes');
+            const btnC = document.getElementById('tabBtnCustomers');
             const btnI = document.getElementById('tabBtnInquiries');
             const contentQ = document.getElementById('tabContentQuotes');
+            const contentC = document.getElementById('tabContentCustomers');
             const contentI = document.getElementById('tabContentInquiries');
 
+            btnQ.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap";
+            btnC.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap";
+            btnI.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2 whitespace-nowrap";
+            
+            contentQ.classList.add('hidden');
+            contentC.classList.add('hidden');
+            contentI.classList.add('hidden');
+
             if (tabName === 'quotes') {
-                btnQ.className = "px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transition flex items-center gap-2";
-                btnI.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2";
+                btnQ.className = "px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transition flex items-center gap-2 whitespace-nowrap";
                 contentQ.classList.remove('hidden');
-                contentI.classList.add('hidden');
+            } else if (tabName === 'customers') {
+                btnC.className = "px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg transition flex items-center gap-2 whitespace-nowrap";
+                contentC.classList.remove('hidden');
             } else {
-                btnI.className = "px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg transition flex items-center gap-2";
-                btnQ.className = "px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2";
+                btnI.className = "px-5 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg transition flex items-center gap-2 whitespace-nowrap";
                 contentI.classList.remove('hidden');
-                contentQ.classList.add('hidden');
             }
         }
 
@@ -767,6 +833,7 @@
             e.preventDefault();
             inventory.push({
                 id: Date.now(),
+                code: document.getElementById('stockItemCode').value || 'SKU-00',
                 name: document.getElementById('stockItemName').value,
                 variant: document.getElementById('stockVariant').value || '',
                 qty: parseInt(document.getElementById('stockQty').value) || 0,
@@ -777,7 +844,22 @@
             saveAndSync();
         });
 
-        // Place Order
+        // SMART CUSTOMER AUTO-FILL & TRACKING ENGINE
+        function handleCustomerAutoFill(val) {
+            const badge = document.getElementById('custOrderHistoryBadge');
+            const found = customerBase.find(c => c.name.toLowerCase() === val.trim().toLowerCase());
+            
+            if (found) {
+                document.getElementById('custPhone').value = found.phone || '';
+                document.getElementById('custAddress').value = found.address || '';
+                document.getElementById('custOrderCount').innerText = found.orderCount || 1;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Place Order & Save/Update Customer Base
         document.getElementById('orderForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('orderItemSelect').value);
@@ -791,6 +873,26 @@
 
             stockItem.qty -= reqQty;
 
+            const cName = document.getElementById('custName').value.trim();
+            const cPhone = document.getElementById('custPhone').value.trim();
+            const cAddr = document.getElementById('custAddress').value.trim();
+
+            // SAVE OR UPDATE CUSTOMER BASE
+            let existingCust = customerBase.find(c => c.name.toLowerCase() === cName.toLowerCase() || c.phone === cPhone);
+            if (existingCust) {
+                existingCust.phone = cPhone;
+                existingCust.address = cAddr;
+                existingCust.orderCount = (existingCust.orderCount || 0) + 1;
+            } else {
+                customerBase.push({
+                    id: Date.now(),
+                    name: cName,
+                    phone: cPhone,
+                    address: cAddr,
+                    orderCount: 1
+                });
+            }
+
             const totalItemCost = stockItem.cost * reqQty;
             const totalItemSale = stockItem.price * reqQty;
             const totalOrderProfit = totalItemSale - totalItemCost;
@@ -798,9 +900,10 @@
             const newOrder = {
                 id: Date.now(),
                 itemId: stockItem.id,
-                custName: document.getElementById('custName').value,
-                custPhone: document.getElementById('custPhone').value,
-                custAddress: document.getElementById('custAddress').value,
+                itemCode: stockItem.code || 'SKU-00',
+                custName: cName,
+                custPhone: cPhone,
+                custAddress: cAddr,
                 itemName: stockItem.variant ? `${stockItem.name} (${stockItem.variant})` : stockItem.name,
                 orderQty: reqQty,
                 price: totalItemSale,
@@ -812,6 +915,7 @@
 
             orders.push(newOrder);
             document.getElementById('orderForm').reset();
+            document.getElementById('custOrderHistoryBadge').classList.add('hidden');
             saveAndSync();
         });
 
@@ -829,31 +933,32 @@
             saveAndSync();
         });
 
-        // Add Quotation & Open Preview with Discount
+        // Add Quotation & Open Preview with Discount & VAT
         document.getElementById('quotationForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('quoteItemSelect').value);
             const reqQty = parseInt(document.getElementById('quoteQty').value) || 1;
             const discountAmt = parseFloat(document.getElementById('quoteDiscount').value) || 0;
+            const vatPercent = parseFloat(document.getElementById('quoteVat').value) || 0;
             const stockItem = inventory.find(i => i.id === itemId);
 
             if(!stockItem) return;
 
             const unitRate = stockItem.price;
             const grossTotal = unitRate * reqQty;
-            const netPrice = Math.max(0, grossTotal - discountAmt);
 
             const quoteObj = {
                 id: Date.now(),
                 custName: document.getElementById('quoteCustName').value,
                 custPhone: document.getElementById('quoteCustPhone').value,
+                itemCode: stockItem.code || 'SKU-00',
                 itemName: stockItem.name,
                 unit: stockItem.variant || 'Standard',
                 orderQty: reqQty,
                 unitRate: unitRate,
                 grossTotal: grossTotal,
                 discount: discountAmt,
-                price: netPrice,
+                vatPercent: vatPercent,
                 date: new Date().toLocaleDateString()
             };
 
@@ -921,28 +1026,46 @@
             document.getElementById('shippingStickerModal').classList.add('hidden');
         }
 
-        // OPEN ADVANCED COLORED INVOICE & QUOTATION PRINT MODAL
+        // OPEN ADVANCED EDITABLE COLORED INVOICE & QUOTATION PRINT MODAL
         function openInvoiceModal(obj, type) {
             document.getElementById('invModalType').innerText = type;
             document.getElementById('invModalRef').innerText = `#${type.slice(0,3)}-${obj.id.toString().slice(-4)}`;
             document.getElementById('invModalDate').innerText = obj.date;
             document.getElementById('invModalCustName').innerText = obj.custName;
             document.getElementById('invModalCustPhone').innerText = obj.custPhone;
-            document.getElementById('invModalItemDesc').innerText = obj.itemName;
-            document.getElementById('invModalUnit').innerText = obj.unit || 'Standard';
+            
+            document.getElementById('invModalItemCode').innerText = obj.itemCode || 'SKU-01';
+            document.getElementById('invModalItemDesc').innerText = obj.itemName + (obj.unit ? ` (${obj.unit})` : '');
             document.getElementById('invModalQty').innerText = obj.orderQty;
             
             const rate = obj.unitRate || (obj.price / obj.orderQty);
             const gross = obj.grossTotal || (rate * obj.orderQty);
-            const disc = obj.discount || 0;
+            currentActiveModalGross = gross;
 
             document.getElementById('invModalRate').innerText = formatMoney(rate);
             document.getElementById('invModalSubTotal').innerText = formatMoney(gross);
             document.getElementById('invModalCalcSubTotal').innerText = `Rs. ${formatMoney(gross)}`;
-            document.getElementById('invModalDiscount').innerText = `- Rs. ${formatMoney(disc)}`;
-            document.getElementById('invModalGrandTotal').innerText = `Rs. ${formatMoney(obj.price)}`;
+
+            document.getElementById('invModalEditDiscount').value = obj.discount || 0;
+            document.getElementById('invModalEditVat').value = obj.vatPercent || 0;
+
+            recalculateModalTotals();
 
             document.getElementById('invoiceModal').classList.remove('hidden');
+        }
+
+        // DYNAMIC RECALCULATION OF DISCOUNT & VAT IN MODAL
+        function recalculateModalTotals() {
+            const gross = currentActiveModalGross;
+            const discount = parseFloat(document.getElementById('invModalEditDiscount').value) || 0;
+            const vatPercent = parseFloat(document.getElementById('invModalEditVat').value) || 0;
+
+            const afterDiscount = Math.max(0, gross - discount);
+            const vatAmount = (afterDiscount * vatPercent) / 100;
+            const netTotal = afterDiscount + vatAmount;
+
+            document.getElementById('invModalVatAmount').innerText = `Rs. ${formatMoney(vatAmount)}`;
+            document.getElementById('invModalGrandTotal').innerText = `Rs. ${formatMoney(netTotal)}`;
         }
 
         function closeInvoiceModal() {
@@ -998,8 +1121,9 @@
             localStorage.setItem('biz_orders_data', JSON.stringify(orders));
             localStorage.setItem('biz_inquiries_data', JSON.stringify(inquiries));
             localStorage.setItem('biz_quotations_data', JSON.stringify(quotations));
+            localStorage.setItem('biz_customer_base', JSON.stringify(customerBase));
             localStorage.setItem('biz_damaged_qty', damagedItemsCount.toString());
-            syncDataToCloud({ inventory: inventory, orders: orders, inquiries: inquiries, quotations: quotations, damagedItemsCount: damagedItemsCount });
+            syncDataToCloud({ inventory: inventory, orders: orders, inquiries: inquiries, quotations: quotations, customerBase: customerBase, damagedItemsCount: damagedItemsCount });
             renderApp();
         }
 
@@ -1009,6 +1133,7 @@
                 if (state.orders) orders = state.orders;
                 if (state.inquiries) inquiries = state.inquiries;
                 if (state.quotations) quotations = state.quotations;
+                if (state.customerBase) customerBase = state.customerBase;
                 if (state.damagedItemsCount) damagedItemsCount = state.damagedItemsCount;
                 renderApp();
             }
@@ -1020,12 +1145,36 @@
                 orders = [];
                 inquiries = [];
                 quotations = [];
+                customerBase = [];
                 damagedItemsCount = 0;
                 saveAndSync();
             }
         }
 
         function renderApp() {
+            // Render Customer Auto-Fill Datalist Options
+            const custDatalist = document.getElementById('customerSuggestList');
+            custDatalist.innerHTML = '';
+            customerBase.forEach(c => {
+                custDatalist.innerHTML += `<option value="${c.name}">${c.phone} - ${c.address} (${c.orderCount || 1} Orders)</option>`;
+            });
+
+            // Render Customer Table Sheet
+            const custTableBody = document.getElementById('customerTableBody');
+            if (custTableBody) {
+                custTableBody.innerHTML = '';
+                customerBase.forEach(c => {
+                    custTableBody.innerHTML += `
+                        <tr class="border-b border-slate-800 hover:bg-slate-800/40">
+                            <td class="p-3 font-bold text-white flex items-center gap-2"><i class="fas fa-circle-user text-emerald-400"></i> ${c.name}</td>
+                            <td class="p-3 font-mono text-slate-300">${c.phone}</td>
+                            <td class="p-3 text-slate-400">${c.address}</td>
+                            <td class="p-3 text-center"><span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-mono font-bold">${c.orderCount || 1} Orders</span></td>
+                        </tr>`;
+                });
+                document.getElementById('totalCustomersCount').innerText = customerBase.length;
+            }
+
             // Render Stock Select Options
             const selectEl = document.getElementById('orderItemSelect');
             const quoteSelectEl = document.getElementById('quoteItemSelect');
@@ -1033,8 +1182,9 @@
             if (quoteSelectEl) quoteSelectEl.innerHTML = '';
 
             inventory.forEach(i => {
-                const displayName = i.variant ? `${i.name} [${i.variant}]` : i.name;
-                const optionHtml = `<option value="${i.id}">${displayName} (In Stock: ${i.qty}) - Rs.${i.price}</option>`;
+                const codeStr = i.code ? `[${i.code}] ` : '';
+                const displayName = i.variant ? `${codeStr}${i.name} (${i.variant})` : `${codeStr}${i.name}`;
+                const optionHtml = `<option value="${i.id}">${displayName} - Stock: ${i.qty} - Rs.${i.price}</option>`;
                 selectEl.innerHTML += optionHtml;
                 if (quoteSelectEl) quoteSelectEl.innerHTML += optionHtml;
             });
@@ -1059,7 +1209,7 @@
 
                 stockBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
-                        <td class="p-3 font-bold text-white">${displayName}</td>
+                        <td class="p-3 font-bold text-white"><span class="text-xs font-mono text-indigo-400 block">${i.code || 'SKU-00'}</span>${displayName}</td>
                         <td class="p-3 text-right font-mono text-xs">Cost: Rs.${formatMoney(i.cost)}<br><span class="text-emerald-400 font-bold">Sale: Rs.${formatMoney(i.price)}</span></td>
                         <td class="p-3 text-right font-mono font-bold text-indigo-400">Rs. ${formatMoney(itemProfit)}</td>
                         <td class="p-3 text-center font-mono font-bold text-white">${i.qty}<br>${badge}</td>
@@ -1075,15 +1225,18 @@
             if (quoteBody) {
                 quoteBody.innerHTML = '';
                 quotations.forEach(q => {
-                    const gross = q.grossTotal || q.price;
+                    const gross = q.grossTotal || (q.unitRate * q.orderQty) || q.price;
                     const disc = q.discount || 0;
+                    const vatP = q.vatPercent || 0;
+                    const net = Math.max(0, gross - disc) * (1 + vatP/100);
+
                     quoteBody.innerHTML += `
                         <tr class="border-b border-slate-800 hover:bg-slate-800/40">
                             <td class="p-3 font-mono text-slate-400">${q.date}</td>
                             <td class="p-3 font-bold text-white">${q.custName}<br><span class="text-slate-400 font-normal text-xs">${q.custPhone}</span></td>
-                            <td class="p-3">${q.itemName} <span class="text-indigo-400 text-xs">(x${q.orderQty})</span></td>
-                            <td class="p-3 text-right font-mono text-xs text-slate-400">Gross: Rs.${formatMoney(gross)}<br><span class="text-rose-400">Disc: -Rs.${formatMoney(disc)}</span></td>
-                            <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(q.price)}</td>
+                            <td class="p-3"><span class="text-xs font-mono text-indigo-400 block">${q.itemCode || 'SKU-00'}</span>${q.itemName} <span class="text-indigo-400 text-xs">(x${q.orderQty})</span></td>
+                            <td class="p-3 text-right font-mono text-xs text-slate-400">Gross: Rs.${formatMoney(gross)}<br><span class="text-rose-400">Disc: -Rs.${formatMoney(disc)}</span> | <span class="text-indigo-300">VAT: ${vatP}%</span></td>
+                            <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(net)}</td>
                             <td class="p-3 text-center">
                                 <button onclick='openInvoiceModal(${JSON.stringify(q)}, "QUOTATION")' class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto"><i class="fas fa-file-invoice"></i> View Advanced Bill</button>
                             </td>
@@ -1120,7 +1273,7 @@
                 ordersBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
                         <td class="p-3">
-                            <div class="font-bold text-white">${o.itemName} <span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full">Qty: ${o.orderQty || 1}</span></div>
+                            <div class="font-bold text-white"><span class="text-xs font-mono text-indigo-400 font-normal">[${o.itemCode || 'SKU-00'}]</span> ${o.itemName} <span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full">Qty: ${o.orderQty || 1}</span></div>
                             <div class="text-xs text-slate-400">Sale: Rs. ${formatMoney(o.price)} | ${o.date}</div>
                         </td>
                         <td class="p-3">
