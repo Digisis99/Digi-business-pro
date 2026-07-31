@@ -14,8 +14,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Chart.js for Performance Graphs -->
+    <!-- Chart.js for Performance Graphs & html2pdf for Native PDF -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         body { 
@@ -65,11 +66,11 @@
         .sync-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .sync-loading { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        /* PRINT STYLES FOR SHIPPING STICKER & MONTHLY REPORT */
+        /* PRINT STYLES FOR SHIPPING STICKER, MONTHLY REPORT & PDF INVOICE */
         @media print {
             body * { visibility: hidden; }
-            #shippingStickerModal, #shippingStickerModal *, #monthlyReportModal, #monthlyReportModal * { visibility: visible; }
-            #shippingStickerModal, #monthlyReportModal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+            #shippingStickerModal, #shippingStickerModal *, #monthlyReportModal, #monthlyReportModal *, #pdfInvoiceTemplate, #pdfInvoiceTemplate * { visibility: visible; }
+            #shippingStickerModal, #monthlyReportModal, #pdfInvoiceTemplate { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
             .no-print-btn, footer { display: none !important; }
             .glass-card { background: white !important; border: 2px solid #000 !important; color: black !important; }
         }
@@ -192,6 +193,10 @@
                             <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Name</label>
                             <input type="text" id="stockItemName" placeholder="Product Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Variant (Size / Colour / Model)</label>
+                            <input type="text" id="stockVariant" placeholder="e.g. Size: XL, Colour: Red, 60x60" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500">
+                        </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Stock Qty (තොගය)</label>
@@ -225,7 +230,7 @@
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
                                 <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
-                                    <th class="p-3">Item Name</th>
+                                    <th class="p-3">Item Name & Variant</th>
                                     <th class="p-3 text-right">Cost / Sale</th>
                                     <th class="p-3 text-right">Profit / Unit</th>
                                     <th class="p-3 text-center">Available Stock</th>
@@ -291,6 +296,49 @@
 
                     <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
                         <i class="fas fa-check-circle"></i> Place Order & Deduct Stock
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- NEW ADDITIONS: INQUIRIES & QUOTATIONS SECTION -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 no-print">
+            <!-- Inquiry Tracker -->
+            <div class="glass-card p-6 rounded-3xl space-y-4">
+                <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                    <i class="fas fa-headset text-purple-400"></i> Customer Inquiry Tracker (විමසීම්)
+                </h2>
+                <form id="inquiryForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" id="inqName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <input type="text" id="inqPhone" placeholder="WhatsApp Phone" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <input type="text" id="inqNote" placeholder="Inquiry / Requirement" class="sm:col-span-2 rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <button type="submit" class="sm:col-span-2 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs">
+                        <i class="fas fa-plus"></i> Save Inquiry
+                    </button>
+                </form>
+                <div class="overflow-y-auto max-h-36">
+                    <table class="w-full text-left text-xs">
+                        <tbody id="inquiryTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quotation Generator -->
+            <div class="glass-card p-6 rounded-3xl space-y-4">
+                <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
+                    <i class="fas fa-file-signature text-indigo-400"></i> Issue Quotation (මිල ගණන් යැවීම)
+                </h2>
+                <form id="quotationForm" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="quoteCustName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                        <input type="text" id="quoteCustPhone" placeholder="WhatsApp Phone" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <select id="quoteItemSelect" class="col-span-2 rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required></select>
+                        <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs">
+                        <i class="fas fa-paper-plane"></i> Generate Quotation & PDF/WhatsApp
                     </button>
                 </form>
             </div>
@@ -386,7 +434,7 @@
                 <p class="text-xs font-mono text-slate-600">Generated on: <span id="reportGenDate"></span></p>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
                 <div class="bg-slate-100 p-3 rounded-lg border border-slate-300">
                     <span class="block font-bold text-slate-500">TOTAL REVENUE</span>
                     <span id="rptTotalRevenue" class="text-base font-black text-emerald-700">Rs. 0.00</span>
@@ -410,6 +458,14 @@
                 <div class="bg-slate-100 p-3 rounded-lg border border-slate-300">
                     <span class="block font-bold text-slate-500">DAMAGED ITEMS LOSS</span>
                     <span id="rptDamagedQty" class="text-base font-black text-rose-700">0 Items</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border border-slate-300">
+                    <span class="block font-bold text-slate-500">INQUIRIES</span>
+                    <span id="rptInquiriesCount" class="text-base font-black text-purple-700">0</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border border-slate-300">
+                    <span class="block font-bold text-slate-500">QUOTATIONS</span>
+                    <span id="rptQuotesCount" class="text-base font-black text-indigo-700">0</span>
                 </div>
             </div>
 
@@ -435,6 +491,48 @@
                 <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"><i class="fas fa-print"></i> Print Monthly Report</button>
                 <button onclick="closeMonthlyReportModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN HTML TEMPLATE FOR PDF INVOICE & QUOTATION GENERATION -->
+    <div id="pdfInvoiceTemplate" class="hidden p-8 bg-white text-slate-900 space-y-6 max-w-2xl mx-auto">
+        <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
+            <div>
+                <h1 id="pdfDocType" class="text-3xl font-black uppercase text-indigo-900">INVOICE</h1>
+                <p class="text-xs font-mono text-slate-500">Ref: <span id="pdfRefNo">#INV-000</span> | Date: <span id="pdfDate"></span></p>
+            </div>
+            <div class="text-right">
+                <h2 class="font-bold text-base">SMART BUSINESS OS</h2>
+                <p class="text-xs text-slate-600">Official Bill / Quotation</p>
+            </div>
+        </div>
+
+        <div class="border-b pb-4 text-xs space-y-1">
+            <span class="font-bold text-slate-500 uppercase block">CUSTOMER DETAILS:</span>
+            <p id="pdfCustName" class="font-bold text-base"></p>
+            <p id="pdfCustPhone" class="font-mono"></p>
+        </div>
+
+        <table class="w-full text-left text-xs border-collapse">
+            <thead>
+                <tr class="bg-slate-100 font-bold border-b border-slate-300">
+                    <th class="p-2">Item Description & Variant</th>
+                    <th class="p-2 text-center">Qty</th>
+                    <th class="p-2 text-right">Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-b">
+                    <td id="pdfItemDesc" class="p-2 font-bold"></td>
+                    <td id="pdfQty" class="p-2 text-center font-mono"></td>
+                    <td id="pdfPrice" class="p-2 text-right font-mono font-bold"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="text-right pt-4 border-t-2 border-slate-900">
+            <span class="text-xs font-bold text-slate-500 block">TOTAL AMOUNT:</span>
+            <span id="pdfGrandTotal" class="text-2xl font-black text-indigo-900 font-mono">Rs. 0.00</span>
         </div>
     </div>
 
@@ -531,6 +629,8 @@
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [];
         let orders = JSON.parse(localStorage.getItem('biz_orders_data')) || [];
+        let inquiries = JSON.parse(localStorage.getItem('biz_inquiries_data')) || [];
+        let quotations = JSON.parse(localStorage.getItem('biz_quotations_data')) || [];
         let damagedItemsCount = parseInt(localStorage.getItem('biz_damaged_qty')) || 0;
         let salesChartInstance = null;
 
@@ -572,6 +672,7 @@
             inventory.push({
                 id: Date.now(),
                 name: document.getElementById('stockItemName').value,
+                variant: document.getElementById('stockVariant').value || '',
                 qty: parseInt(document.getElementById('stockQty').value) || 0,
                 cost: parseFloat(document.getElementById('stockCost').value) || 0,
                 price: parseFloat(document.getElementById('stockPrice').value) || 0
@@ -604,7 +705,7 @@
                 custName: document.getElementById('custName').value,
                 custPhone: document.getElementById('custPhone').value,
                 custAddress: document.getElementById('custAddress').value,
-                itemName: stockItem.name,
+                itemName: stockItem.variant ? `${stockItem.name} (${stockItem.variant})` : stockItem.name,
                 orderQty: reqQty,
                 price: totalItemSale,
                 profit: totalOrderProfit,
@@ -616,6 +717,45 @@
             orders.push(newOrder);
             document.getElementById('orderForm').reset();
             saveAndSync();
+        });
+
+        // Add Inquiry
+        document.getElementById('inquiryForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            inquiries.push({
+                id: Date.now(),
+                name: document.getElementById('inqName').value,
+                phone: document.getElementById('inqPhone').value,
+                note: document.getElementById('inqNote').value,
+                date: new Date().toLocaleDateString()
+            });
+            document.getElementById('inquiryForm').reset();
+            saveAndSync();
+        });
+
+        // Add Quotation
+        document.getElementById('quotationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const itemId = parseInt(document.getElementById('quoteItemSelect').value);
+            const reqQty = parseInt(document.getElementById('quoteQty').value) || 1;
+            const stockItem = inventory.find(i => i.id === itemId);
+
+            if(!stockItem) return;
+
+            const quoteObj = {
+                id: Date.now(),
+                custName: document.getElementById('quoteCustName').value,
+                custPhone: document.getElementById('quoteCustPhone').value,
+                itemName: stockItem.variant ? `${stockItem.name} (${stockItem.variant})` : stockItem.name,
+                orderQty: reqQty,
+                price: stockItem.price * reqQty,
+                date: new Date().toLocaleDateString()
+            };
+
+            quotations.push(quoteObj);
+            document.getElementById('quotationForm').reset();
+            saveAndSync();
+            generatePDFInvoice(quoteObj, 'QUOTATION');
         });
 
         // Smart Return & Cancellation Handler
@@ -632,7 +772,7 @@
                     damagedItemsCount += ord.orderQty;
                     alert(`⚠️ භාණ්ඩය Damaged ලෙස සටහන් කර ගන්නා ලදී. (Stock එකට එකතු නොකෙරුණි)`);
                 } else {
-                    const stockItem = inventory.find(i => i.name === ord.itemName);
+                    const stockItem = inventory.find(i => i.id === ord.itemId || i.name === ord.itemName);
                     if (stockItem) {
                         stockItem.qty += ord.orderQty;
                         alert(`✓ භාණ්ඩය නැවත Stock එකට එකතු කරන ලදී (Restocked Qty: ${ord.orderQty}).`);
@@ -676,6 +816,27 @@
             document.getElementById('shippingStickerModal').classList.add('hidden');
         }
 
+        function generatePDFInvoice(obj, type) {
+            document.getElementById('pdfDocType').innerText = type;
+            document.getElementById('pdfRefNo').innerText = `#${type.slice(0,3)}-${obj.id.toString().slice(-4)}`;
+            document.getElementById('pdfDate').innerText = obj.date;
+            document.getElementById('pdfCustName').innerText = obj.custName;
+            document.getElementById('pdfCustPhone').innerText = obj.custPhone;
+            document.getElementById('pdfItemDesc').innerText = obj.itemName;
+            document.getElementById('pdfQty').innerText = obj.orderQty;
+            document.getElementById('pdfPrice').innerText = `Rs. ${formatMoney(obj.price)}`;
+            document.getElementById('pdfGrandTotal').innerText = `Rs. ${formatMoney(obj.price)}`;
+
+            const element = document.getElementById('pdfInvoiceTemplate');
+            element.classList.remove('hidden');
+
+            html2pdf().from(element).save(`${type}_${obj.custName}.pdf`).then(() => {
+                element.classList.add('hidden');
+                let msg = `👋 *Hello ${obj.custName}*,\n\nඔබගේ *${type}* එක සූදානම් කර ඇත.\n📦 *Item:* ${obj.itemName}\n💰 *Total Price:* Rs. ${formatMoney(obj.price)}\n\nස්තූතියි!`;
+                window.open(`https://wa.me/${obj.custPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+            });
+        }
+
         function openMonthlyReportModal() {
             let totalRev = 0, totalNetProfit = 0, successOrders = 0, cancelledOrders = 0;
             const reportTable = document.getElementById('reportTableBody');
@@ -710,6 +871,8 @@
             document.getElementById('rptSuccessOrders').innerText = successOrders;
             document.getElementById('rptCancelledOrders').innerText = cancelledOrders;
             document.getElementById('rptDamagedQty').innerText = `${damagedItemsCount} Items`;
+            document.getElementById('rptInquiriesCount').innerText = inquiries.length;
+            document.getElementById('rptQuotesCount').innerText = quotations.length;
 
             document.getElementById('monthlyReportModal').classList.remove('hidden');
         }
@@ -721,8 +884,10 @@
         function saveAndSync() {
             localStorage.setItem('biz_inventory_data', JSON.stringify(inventory));
             localStorage.setItem('biz_orders_data', JSON.stringify(orders));
+            localStorage.setItem('biz_inquiries_data', JSON.stringify(inquiries));
+            localStorage.setItem('biz_quotations_data', JSON.stringify(quotations));
             localStorage.setItem('biz_damaged_qty', damagedItemsCount.toString());
-            syncDataToCloud({ inventory: inventory, orders: orders, damagedItemsCount: damagedItemsCount });
+            syncDataToCloud({ inventory: inventory, orders: orders, inquiries: inquiries, quotations: quotations, damagedItemsCount: damagedItemsCount });
             renderApp();
         }
 
@@ -730,6 +895,8 @@
             if (state) {
                 if (state.inventory) inventory = state.inventory;
                 if (state.orders) orders = state.orders;
+                if (state.inquiries) inquiries = state.inquiries;
+                if (state.quotations) quotations = state.quotations;
                 if (state.damagedItemsCount) damagedItemsCount = state.damagedItemsCount;
                 renderApp();
             }
@@ -739,6 +906,8 @@
             if (confirm('සියලුම Data ඉවත් කිරීමට අවශ්‍යද?')) {
                 inventory = [];
                 orders = [];
+                inquiries = [];
+                quotations = [];
                 damagedItemsCount = 0;
                 saveAndSync();
             }
@@ -747,9 +916,15 @@
         function renderApp() {
             // Render Stock Select Options
             const selectEl = document.getElementById('orderItemSelect');
+            const quoteSelectEl = document.getElementById('quoteItemSelect');
             selectEl.innerHTML = '';
+            if (quoteSelectEl) quoteSelectEl.innerHTML = '';
+
             inventory.forEach(i => {
-                selectEl.innerHTML += `<option value="${i.id}">${i.name} (In Stock: ${i.qty}) - Rs.${i.price}</option>`;
+                const displayName = i.variant ? `${i.name} [${i.variant}]` : i.name;
+                const optionHtml = `<option value="${i.id}">${displayName} (In Stock: ${i.qty}) - Rs.${i.price}</option>`;
+                selectEl.innerHTML += optionHtml;
+                if (quoteSelectEl) quoteSelectEl.innerHTML += optionHtml;
             });
 
             // Render Stock Table
@@ -768,9 +943,11 @@
                     lowStockCount++;
                 }
 
+                const displayName = i.variant ? `${i.name} <span class="text-xs text-indigo-400">(${i.variant})</span>` : i.name;
+
                 stockBody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 border-b border-slate-800">
-                        <td class="p-3 font-bold text-white">${i.name}</td>
+                        <td class="p-3 font-bold text-white">${displayName}</td>
                         <td class="p-3 text-right font-mono text-xs">Cost: Rs.${formatMoney(i.cost)}<br><span class="text-emerald-400 font-bold">Sale: Rs.${formatMoney(i.price)}</span></td>
                         <td class="p-3 text-right font-mono font-bold text-indigo-400">Rs. ${formatMoney(itemProfit)}</td>
                         <td class="p-3 text-center font-mono font-bold text-white">${i.qty}<br>${badge}</td>
@@ -780,6 +957,18 @@
                     </tr>
                 `;
             });
+
+            // Render Inquiry Table
+            const inqBody = document.getElementById('inquiryTableBody');
+            if (inqBody) {
+                inqBody.innerHTML = '';
+                inquiries.forEach(i => {
+                    inqBody.innerHTML += `
+                        <tr class="border-b border-slate-800">
+                            <td class="p-2"><span class="font-bold text-white">${i.name}</span> (${i.phone}) - <span class="text-indigo-400 font-mono">${i.date}</span><br><span class="text-slate-400">${i.note}</span></td>
+                        </tr>`;
+                });
+            }
 
             // Render Orders Directory
             const ordersBody = document.getElementById('ordersTableBody');
@@ -814,8 +1003,9 @@
                             </select>
                         </td>
                         <td class="p-3 text-center no-print space-x-1">
-                            <button onclick="sendWhatsAppMsg(${o.id})" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 p-2 rounded-lg text-xs"><i class="fab fa-whatsapp"></i></button>
-                            <button onclick="openShippingSticker(${o.id})" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 p-2 rounded-lg text-xs"><i class="fas fa-print"></i></button>
+                            <button onclick="sendWhatsAppMsg(${o.id})" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 p-2 rounded-lg text-xs" title="WhatsApp Message"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="openShippingSticker(${o.id})" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 p-2 rounded-lg text-xs" title="Shipping Label Sticker"><i class="fas fa-print"></i></button>
+                            <button onclick='generatePDFInvoice(${JSON.stringify(o)}, "INVOICE")' class="bg-purple-600/20 text-purple-400 border border-purple-500/30 p-2 rounded-lg text-xs" title="PDF Invoice & WhatsApp"><i class="fas fa-file-pdf"></i></button>
                         </td>
                     </tr>
                 `;
