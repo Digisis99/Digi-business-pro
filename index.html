@@ -301,46 +301,72 @@
             </div>
         </div>
 
-        <!-- NEW ADDITIONS: INQUIRIES & QUOTATIONS SECTION -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 no-print">
-            <!-- Inquiry Tracker -->
-            <div class="glass-card p-6 rounded-3xl space-y-4">
-                <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
-                    <i class="fas fa-headset text-purple-400"></i> Customer Inquiry Tracker (විමසීම්)
-                </h2>
-                <form id="inquiryForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" id="inqName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                    <input type="text" id="inqPhone" placeholder="WhatsApp Phone" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                    <input type="text" id="inqNote" placeholder="Inquiry / Requirement" class="sm:col-span-2 rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                    <button type="submit" class="sm:col-span-2 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs">
-                        <i class="fas fa-plus"></i> Save Inquiry
+        <!-- NEW TAB SYSTEM FOR INVOICES/QUOTATIONS & INQUIRIES -->
+        <div class="glass-card p-6 rounded-3xl space-y-4 no-print">
+            <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3">
+                <button onclick="switchTab('quotes')" id="tabBtnQuotes" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white transition flex items-center gap-2">
+                    <i class="fas fa-file-signature"></i> Invoices / Quotations
+                </button>
+                <button onclick="switchTab('inquiries')" id="tabBtnInquiries" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2">
+                    <i class="fas fa-headset"></i> Customer Inquiries
+                </button>
+            </div>
+
+            <!-- TAB 1: INVOICES & QUOTATIONS PANEL -->
+            <div id="tabContentQuotes" class="space-y-4">
+                <form id="quotationForm" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="quoteCustName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                        <input type="text" id="quoteCustPhone" placeholder="WhatsApp Phone (947XXXXXXXX)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <select id="quoteItemSelect" class="sm:col-span-2 rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required></select>
+                        <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Issue Quotation / Invoice & Generate PDF
                     </button>
                 </form>
-                <div class="overflow-y-auto max-h-36">
-                    <table class="w-full text-left text-xs">
-                        <tbody id="inquiryTableBody" class="divide-y divide-slate-800"></tbody>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-700">
+                                <th class="p-2.5">Date</th>
+                                <th class="p-2.5">Customer</th>
+                                <th class="p-2.5">Item & Qty</th>
+                                <th class="p-2.5 text-right">Price</th>
+                                <th class="p-2.5 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotationsTableBody" class="divide-y divide-slate-800"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Quotation Generator -->
-            <div class="glass-card p-6 rounded-3xl space-y-4">
-                <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
-                    <i class="fas fa-file-signature text-indigo-400"></i> Issue Quotation (මිල ගණන් යැවීම)
-                </h2>
-                <form id="quotationForm" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="quoteCustName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                        <input type="text" id="quoteCustPhone" placeholder="WhatsApp Phone" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <select id="quoteItemSelect" class="col-span-2 rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required></select>
-                        <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
-                    </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs">
-                        <i class="fas fa-paper-plane"></i> Generate Quotation & PDF/WhatsApp
+            <!-- TAB 2: INQUIRIES PANEL -->
+            <div id="tabContentInquiries" class="hidden space-y-4">
+                <form id="inquiryForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" id="inqName" placeholder="Customer Name" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <input type="text" id="inqPhone" placeholder="WhatsApp Phone (947XXXXXXXX)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <input type="text" id="inqNote" placeholder="Inquiry Note / Requirement..." class="sm:col-span-2 rounded-xl border border-slate-700 p-3 text-xs bg-slate-900/80 text-white outline-none" required>
+                    <button type="submit" class="sm:col-span-2 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i> Save Customer Inquiry
                     </button>
                 </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-700">
+                                <th class="p-2.5">Date</th>
+                                <th class="p-2.5">Customer & Phone</th>
+                                <th class="p-2.5">Inquiry Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inquiryTableBody" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -635,6 +661,26 @@
         let salesChartInstance = null;
 
         const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Tab Switcher
+        function switchTab(tabName) {
+            const btnQ = document.getElementById('tabBtnQuotes');
+            const btnI = document.getElementById('tabBtnInquiries');
+            const contentQ = document.getElementById('tabContentQuotes');
+            const contentI = document.getElementById('tabContentInquiries');
+
+            if (tabName === 'quotes') {
+                btnQ.className = "px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white transition flex items-center gap-2";
+                btnI.className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2";
+                contentQ.classList.remove('hidden');
+                contentI.classList.add('hidden');
+            } else {
+                btnI.className = "px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white transition flex items-center gap-2";
+                btnQ.className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition flex items-center gap-2";
+                contentI.classList.remove('hidden');
+                contentQ.classList.add('hidden');
+            }
+        }
 
         // Auth Handling
         document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -958,6 +1004,24 @@
                 `;
             });
 
+            // Render Quotations Table
+            const quoteBody = document.getElementById('quotationsTableBody');
+            if (quoteBody) {
+                quoteBody.innerHTML = '';
+                quotations.forEach(q => {
+                    quoteBody.innerHTML += `
+                        <tr class="border-b border-slate-800">
+                            <td class="p-2.5 font-mono">${q.date}</td>
+                            <td class="p-2.5 font-bold text-white">${q.custName}<br><span class="text-slate-400 font-normal">${q.custPhone}</span></td>
+                            <td class="p-2.5">${q.itemName} (x${q.orderQty})</td>
+                            <td class="p-2.5 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(q.price)}</td>
+                            <td class="p-2.5 text-center">
+                                <button onclick='generatePDFInvoice(${JSON.stringify(q)}, "QUOTATION")' class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-2 py-1 rounded-lg text-xs"><i class="fas fa-file-pdf"></i> PDF</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
             // Render Inquiry Table
             const inqBody = document.getElementById('inquiryTableBody');
             if (inqBody) {
@@ -965,7 +1029,9 @@
                 inquiries.forEach(i => {
                     inqBody.innerHTML += `
                         <tr class="border-b border-slate-800">
-                            <td class="p-2"><span class="font-bold text-white">${i.name}</span> (${i.phone}) - <span class="text-indigo-400 font-mono">${i.date}</span><br><span class="text-slate-400">${i.note}</span></td>
+                            <td class="p-2.5 font-mono">${i.date}</td>
+                            <td class="p-2.5 font-bold text-white">${i.name}<br><span class="text-slate-400 font-normal">${i.phone}</span></td>
+                            <td class="p-2.5 text-slate-300">${i.note}</td>
                         </tr>`;
                 });
             }
