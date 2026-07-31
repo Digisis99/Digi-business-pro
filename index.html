@@ -14,9 +14,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Chart.js for Performance Graphs & html2pdf for Native PDF -->
+    <!-- Chart.js for Performance Graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         body { 
@@ -66,7 +65,7 @@
         .sync-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .sync-loading { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        /* PRINT STYLES FOR INVOICE, SHIPPING STICKER & MONTHLY REPORT */
+        /* PRINT STYLES FOR HIGH END INVOICE, SHIPPING STICKER & MONTHLY REPORT */
         @media print {
             body * { visibility: hidden; }
             #invoiceModal, #invoiceModal *, #shippingStickerModal, #shippingStickerModal *, #monthlyReportModal, #monthlyReportModal * { visibility: visible; }
@@ -312,20 +311,21 @@
                 </button>
             </div>
 
-            <!-- SHEET 1: INVOICES & QUOTATIONS -->
+            <!-- SHEET 1: ADVANCED INVOICES & QUOTATIONS WITH DISCOUNT -->
             <div id="tabContentQuotes" class="space-y-4">
                 <form id="quotationForm" class="space-y-3 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                    <h3 class="text-xs font-bold uppercase text-indigo-400 tracking-wider"><i class="fas fa-pen-to-square"></i> Create / Issue Quotation & Invoice</h3>
+                    <h3 class="text-xs font-bold uppercase text-indigo-400 tracking-wider flex items-center gap-2"><i class="fas fa-pen-to-square"></i> Issue Advanced Quotation & Invoice</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input type="text" id="quoteCustName" placeholder="Customer Name..." class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
                         <input type="text" id="quoteCustPhone" placeholder="WhatsApp Phone (947XXXXXXXX)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <select id="quoteItemSelect" class="sm:col-span-2 rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required></select>
                         <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500" required>
+                        <input type="number" id="quoteDiscount" min="0" value="0" step="any" placeholder="Discount (Rs.)" class="rounded-xl border border-slate-700 p-3 text-xs bg-slate-900 text-white outline-none focus:border-indigo-500">
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
-                        <i class="fas fa-print"></i> Issue Quotation / Invoice & Preview Printable Bill
+                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition">
+                        <i class="fas fa-receipt"></i> Issue Quotation / Invoice & Preview Advanced Bill
                     </button>
                 </form>
 
@@ -334,9 +334,10 @@
                         <thead>
                             <tr class="bg-slate-900/90 text-slate-400 uppercase font-bold border-b border-slate-700">
                                 <th class="p-3">Date</th>
-                                <th class="p-3">Customer</th>
-                                <th class="p-3">Item & Qty</th>
-                                <th class="p-3 text-right">Price</th>
+                                <th class="p-3">Customer Details</th>
+                                <th class="p-3">Item Description</th>
+                                <th class="p-3 text-right">Subtotal & Discount</th>
+                                <th class="p-3 text-right">Net Amount</th>
                                 <th class="p-3 text-center">Print / Invoice Action</th>
                             </tr>
                         </thead>
@@ -439,7 +440,6 @@
                 <p id="lblItemName" class="font-bold text-sm text-indigo-900"></p>
             </div>
 
-            <!-- EDITABLE SENDER SECTION -->
             <div class="text-xs space-y-1 bg-slate-50 p-2 rounded-lg border">
                 <span class="font-bold text-slate-500 uppercase block">SENDER DETAILS:</span>
                 <input type="text" id="lblSenderName" placeholder="Sender Name..." class="w-full border p-1 text-xs font-bold rounded">
@@ -454,51 +454,92 @@
         </div>
     </div>
 
-    <!-- HIGH-QUALITY INVOICE & QUOTATION PRINT/PREVIEW MODAL -->
+    <!-- HIGH-QUALITY ADVANCED COLORED INVOICE & QUOTATION PRINT/PREVIEW MODAL -->
     <div id="invoiceModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white text-slate-900 p-8 rounded-2xl max-w-lg w-full border-2 border-black space-y-6 shadow-2xl">
-            <div class="flex justify-between items-center border-b-2 border-black pb-4">
+        <div class="bg-white text-slate-900 p-8 rounded-3xl max-w-2xl w-full border-2 border-indigo-900 space-y-6 shadow-2xl relative overflow-hidden">
+            <!-- Header with Gradient Accent -->
+            <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white p-6 -m-8 mb-4 rounded-t-3xl flex justify-between items-center shadow-lg">
                 <div>
-                    <h1 id="invModalType" class="text-2xl font-black uppercase tracking-wider text-indigo-900">INVOICE</h1>
-                    <p class="text-xs font-mono text-slate-600">Ref: <span id="invModalRef">#INV-000</span> | Date: <span id="invModalDate"></span></p>
+                    <h1 id="invModalType" class="text-3xl font-black uppercase tracking-wider text-amber-400">INVOICE</h1>
+                    <p class="text-xs font-mono text-indigo-200 mt-1">Ref: <span id="invModalRef">#INV-000</span> | Date: <span id="invModalDate"></span></p>
                 </div>
                 <div class="text-right">
-                    <h2 class="font-black text-sm">SMART BUSINESS OS</h2>
-                    <p class="text-[10px] text-slate-500 uppercase">Official Statement</p>
+                    <h2 class="font-black text-lg tracking-tight text-white">SMART BUSINESS PRO OS</h2>
+                    <p class="text-[11px] text-indigo-200 font-medium uppercase tracking-wider">Official Bill & Statement</p>
                 </div>
             </div>
 
-            <div class="space-y-1 text-xs border-b pb-4">
-                <span class="font-bold text-slate-500 uppercase block">CUSTOMER DETAILS:</span>
-                <p id="invModalCustName" class="font-bold text-base text-slate-900"></p>
-                <p id="invModalCustPhone" class="font-mono font-bold text-sm text-indigo-700"></p>
+            <!-- Customer & Company Info Box -->
+            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div>
+                    <span class="font-bold text-indigo-900 uppercase tracking-wider block mb-1">BILLED TO / CUSTOMER:</span>
+                    <p id="invModalCustName" class="font-black text-sm text-slate-900"></p>
+                    <p id="invModalCustPhone" class="font-mono font-bold text-slate-700 mt-0.5"></p>
+                </div>
+                <div class="text-right border-l pl-4 border-slate-300">
+                    <span class="font-bold text-indigo-900 uppercase tracking-wider block mb-1">PAYMENT STATUS:</span>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-300 text-[11px]">OFFICIAL QUOTATION / BILL</span>
+                </div>
             </div>
 
-            <table class="w-full text-left text-xs border-collapse">
-                <thead>
-                    <tr class="bg-slate-100 font-bold border-b border-black">
-                        <th class="p-2">Item Description & Variant</th>
-                        <th class="p-2 text-center">Qty</th>
-                        <th class="p-2 text-right">Total Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b">
-                        <td id="invModalItemDesc" class="p-2 font-bold"></td>
-                        <td id="invModalQty" class="p-2 text-center font-mono font-bold"></td>
-                        <td id="invModalPrice" class="p-2 text-right font-mono font-bold text-indigo-900"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="text-right pt-2 border-t-2 border-black">
-                <span class="text-xs font-bold text-slate-500 block uppercase">TOTAL PAYABLE AMOUNT:</span>
-                <span id="invModalGrandTotal" class="text-2xl font-black text-indigo-900 font-mono">Rs. 0.00</span>
+            <!-- Detailed Items Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-indigo-950 text-white font-bold">
+                            <th class="p-2.5 rounded-l-lg">Item Description</th>
+                            <th class="p-2.5 text-center">Unit / Size</th>
+                            <th class="p-2.5 text-center">Qty</th>
+                            <th class="p-2.5 text-right">Rate (Rs.)</th>
+                            <th class="p-2.5 text-right rounded-r-lg">Amount (Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-slate-200">
+                            <td id="invModalItemDesc" class="p-3 font-bold text-slate-900"></td>
+                            <td id="invModalUnit" class="p-3 text-center text-slate-600 font-medium">Standard</td>
+                            <td id="invModalQty" class="p-3 text-center font-mono font-bold text-slate-900"></td>
+                            <td id="invModalRate" class="p-3 text-right font-mono font-bold text-slate-800"></td>
+                            <td id="invModalSubTotal" class="p-3 text-right font-mono font-bold text-slate-900"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="flex gap-2 no-print-btn pt-4 border-t">
-                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"><i class="fas fa-print"></i> Print Invoice / Save PDF</button>
-                <button onclick="closeInvoiceModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close</button>
+            <!-- Totals & Discount Breakdown Panel -->
+            <div class="flex justify-end pt-2">
+                <div class="w-64 space-y-1.5 text-xs font-mono">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Sub Total:</span>
+                        <span id="invModalCalcSubTotal" class="font-bold">Rs. 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-rose-600 font-bold">
+                        <span>Discount (-):</span>
+                        <span id="invModalDiscount">Rs. 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-base font-black text-indigo-950 pt-2 border-t-2 border-slate-900">
+                        <span>NET TOTAL:</span>
+                        <span id="invModalGrandTotal">Rs. 0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms & Authorized Signature Line -->
+            <div class="pt-6 border-t border-slate-200 grid grid-cols-2 gap-4 text-[11px] text-slate-500">
+                <div>
+                    <p class="font-bold text-slate-700">Thank you for your business!</p>
+                    <p>Computer-generated invoice. No signature required for validation.</p>
+                </div>
+                <div class="text-right pt-4">
+                    <div class="border-b border-slate-400 w-36 ml-auto mb-1"></div>
+                    <p class="font-bold text-slate-700">Authorized Signature</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2 no-print-btn pt-2">
+                <button onclick="window.print()" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2"><i class="fas fa-print"></i> Print Professional Bill / PDF</button>
+                <button onclick="closeInvoiceModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-3 rounded-xl text-xs hover:bg-slate-300 transition">Close</button>
             </div>
         </div>
     </div>
@@ -788,22 +829,31 @@
             saveAndSync();
         });
 
-        // Add Quotation & Open Preview
+        // Add Quotation & Open Preview with Discount
         document.getElementById('quotationForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const itemId = parseInt(document.getElementById('quoteItemSelect').value);
             const reqQty = parseInt(document.getElementById('quoteQty').value) || 1;
+            const discountAmt = parseFloat(document.getElementById('quoteDiscount').value) || 0;
             const stockItem = inventory.find(i => i.id === itemId);
 
             if(!stockItem) return;
+
+            const unitRate = stockItem.price;
+            const grossTotal = unitRate * reqQty;
+            const netPrice = Math.max(0, grossTotal - discountAmt);
 
             const quoteObj = {
                 id: Date.now(),
                 custName: document.getElementById('quoteCustName').value,
                 custPhone: document.getElementById('quoteCustPhone').value,
-                itemName: stockItem.variant ? `${stockItem.name} (${stockItem.variant})` : stockItem.name,
+                itemName: stockItem.name,
+                unit: stockItem.variant || 'Standard',
                 orderQty: reqQty,
-                price: stockItem.price * reqQty,
+                unitRate: unitRate,
+                grossTotal: grossTotal,
+                discount: discountAmt,
+                price: netPrice,
                 date: new Date().toLocaleDateString()
             };
 
@@ -871,7 +921,7 @@
             document.getElementById('shippingStickerModal').classList.add('hidden');
         }
 
-        // OPEN INVOICE & QUOTATION PRINT MODAL
+        // OPEN ADVANCED COLORED INVOICE & QUOTATION PRINT MODAL
         function openInvoiceModal(obj, type) {
             document.getElementById('invModalType').innerText = type;
             document.getElementById('invModalRef').innerText = `#${type.slice(0,3)}-${obj.id.toString().slice(-4)}`;
@@ -879,8 +929,17 @@
             document.getElementById('invModalCustName').innerText = obj.custName;
             document.getElementById('invModalCustPhone').innerText = obj.custPhone;
             document.getElementById('invModalItemDesc').innerText = obj.itemName;
+            document.getElementById('invModalUnit').innerText = obj.unit || 'Standard';
             document.getElementById('invModalQty').innerText = obj.orderQty;
-            document.getElementById('invModalPrice').innerText = `Rs. ${formatMoney(obj.price)}`;
+            
+            const rate = obj.unitRate || (obj.price / obj.orderQty);
+            const gross = obj.grossTotal || (rate * obj.orderQty);
+            const disc = obj.discount || 0;
+
+            document.getElementById('invModalRate').innerText = formatMoney(rate);
+            document.getElementById('invModalSubTotal').innerText = formatMoney(gross);
+            document.getElementById('invModalCalcSubTotal').innerText = `Rs. ${formatMoney(gross)}`;
+            document.getElementById('invModalDiscount').innerText = `- Rs. ${formatMoney(disc)}`;
             document.getElementById('invModalGrandTotal').innerText = `Rs. ${formatMoney(obj.price)}`;
 
             document.getElementById('invoiceModal').classList.remove('hidden');
@@ -1016,14 +1075,17 @@
             if (quoteBody) {
                 quoteBody.innerHTML = '';
                 quotations.forEach(q => {
+                    const gross = q.grossTotal || q.price;
+                    const disc = q.discount || 0;
                     quoteBody.innerHTML += `
                         <tr class="border-b border-slate-800 hover:bg-slate-800/40">
-                            <td class="p-3 font-mono">${q.date}</td>
-                            <td class="p-3 font-bold text-white">${q.custName}<br><span class="text-slate-400 font-normal">${q.custPhone}</span></td>
-                            <td class="p-3">${q.itemName} (x${q.orderQty})</td>
+                            <td class="p-3 font-mono text-slate-400">${q.date}</td>
+                            <td class="p-3 font-bold text-white">${q.custName}<br><span class="text-slate-400 font-normal text-xs">${q.custPhone}</span></td>
+                            <td class="p-3">${q.itemName} <span class="text-indigo-400 text-xs">(x${q.orderQty})</span></td>
+                            <td class="p-3 text-right font-mono text-xs text-slate-400">Gross: Rs.${formatMoney(gross)}<br><span class="text-rose-400">Disc: -Rs.${formatMoney(disc)}</span></td>
                             <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(q.price)}</td>
                             <td class="p-3 text-center">
-                                <button onclick='openInvoiceModal(${JSON.stringify(q)}, "QUOTATION")' class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-file-invoice"></i> View / Print</button>
+                                <button onclick='openInvoiceModal(${JSON.stringify(q)}, "QUOTATION")' class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto"><i class="fas fa-file-invoice"></i> View Advanced Bill</button>
                             </td>
                         </tr>`;
                 });
@@ -1036,8 +1098,8 @@
                 inquiries.forEach(i => {
                     inqBody.innerHTML += `
                         <tr class="border-b border-slate-800 hover:bg-slate-800/40">
-                            <td class="p-3 font-mono">${i.date}</td>
-                            <td class="p-3 font-bold text-white">${i.name}<br><span class="text-slate-400 font-normal">${i.phone}</span></td>
+                            <td class="p-3 font-mono text-slate-400">${i.date}</td>
+                            <td class="p-3 font-bold text-white">${i.name}<br><span class="text-slate-400 font-normal text-xs">${i.phone}</span></td>
                             <td class="p-3 text-slate-300">${i.note}</td>
                         </tr>`;
                 });
@@ -1078,7 +1140,7 @@
                         <td class="p-3 text-center no-print space-x-1">
                             <button onclick="sendWhatsAppMsg(${o.id})" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 p-2 rounded-lg text-xs" title="WhatsApp Message"><i class="fab fa-whatsapp"></i></button>
                             <button onclick="openShippingSticker(${o.id})" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 p-2 rounded-lg text-xs" title="Shipping Label Sticker"><i class="fas fa-print"></i></button>
-                            <button onclick='openInvoiceModal(${JSON.stringify(o)}, "INVOICE")' class="bg-purple-600/20 text-purple-400 border border-purple-500/30 p-2 rounded-lg text-xs" title="View / Print Invoice"><i class="fas fa-file-invoice"></i></button>
+                            <button onclick='openInvoiceModal(${JSON.stringify(o)}, "INVOICE")' class="bg-purple-600/20 text-purple-400 border border-purple-500/30 p-2 rounded-lg text-xs" title="View / Print Advanced Invoice"><i class="fas fa-file-invoice"></i></button>
                         </td>
                     </tr>
                 `;
