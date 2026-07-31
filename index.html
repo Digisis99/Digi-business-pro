@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Smart Online Business Pro OS - Ultimate Enterprise Edition</title>
+    <title>Smart Online Business Pro OS - All-In-One Enterprise Edition</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,18 +48,26 @@
             transform: scale(1.02);
         }
 
-        /* PRINT & PDF TEMPLATE STYLES */
+        .pulse-badge { animation: pulse-glow 2s infinite; }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* PRINT STYLES */
         @media print {
             body * { visibility: hidden; }
-            #pdfInvoiceTemplate, #pdfInvoiceTemplate * { visibility: visible; }
-            #pdfInvoiceTemplate { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
-            .no-print { display: none !important; }
+            #shippingStickerModal, #shippingStickerModal *, #monthlyReportModal, #monthlyReportModal *, #pdfInvoiceTemplate, #pdfInvoiceTemplate * { visibility: visible; }
+            #shippingStickerModal, #monthlyReportModal, #pdfInvoiceTemplate { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; }
+            .no-print, footer { display: none !important; }
+            .glass-card { background: white !important; border: 2px solid #000 !important; color: black !important; }
         }
     </style>
 </head>
 <body class="p-3 sm:p-6 md:p-8 flex flex-col justify-between min-h-screen">
 
-    <!-- AUTH OVERLAY -->
+    <!-- AUTHENTICATION OVERLAY -->
     <div id="authOverlay" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-4">
         <div class="w-full max-w-md glass-card p-8 rounded-3xl text-center space-y-6 border border-white/20">
             <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
@@ -76,10 +84,14 @@
                 </button>
             </form>
             <p class="text-[11px] text-slate-500">Default PIN: <span class="font-mono font-bold text-slate-300">1234</span></p>
+            <div class="pt-4 border-t border-slate-800 text-[10px] text-slate-500 space-y-1">
+                <p><i class="fas fa-shield-halved text-indigo-400"></i> Encrypted & Protected System Engine</p>
+                <p>© 2026 Smart Business Pro OS. All Rights Reserved.</p>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN SYSTEM -->
+    <!-- MAIN APP DASHBOARD -->
     <div id="mainSystem" class="max-w-7xl mx-auto space-y-6 hidden w-full mb-8">
         
         <!-- Header -->
@@ -90,16 +102,22 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-3">
-                        Enterprise OS Pro
+                        Smart Business Pro Analytics
                         <span id="syncBadge" class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-lg border border-emerald-500/30"><i class="fa-solid fa-cloud-check"></i> Cloud Synced</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium">Variants, Quotations, Inquiries, PDF Invoices & Analytics</p>
+                    <p class="text-xs text-slate-400 font-medium">Full Stock, Variants, Orders, WhatsApp, Invoices & Monthly Reports</p>
                 </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5 no-print w-full md:w-auto">
                 <button onclick="openMonthlyReportModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition flex items-center gap-1.5">
                     <i class="fas fa-file-invoice-dollar"></i> Monthly Report
+                </button>
+                <button onclick="changePinModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                    <i class="fas fa-key text-amber-400"></i> PIN
+                </button>
+                <button onclick="clearAllData()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-3.5 py-2 rounded-xl font-semibold transition text-xs flex items-center gap-1.5">
+                    <i class="fas fa-trash-alt"></i> Reset
                 </button>
                 <button onclick="lockSystem()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3.5 py-2 rounded-xl font-semibold transition text-xs flex items-center gap-1.5">
                     <i class="fas fa-lock"></i> Lock
@@ -115,6 +133,7 @@
                     <span class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg"><i class="fas fa-wallet"></i></span>
                 </div>
                 <div class="text-2xl font-black text-emerald-400 font-mono">Rs. <span id="kpiRevenue">0.00</span></div>
+                <p class="text-[11px] text-slate-400 mt-2">සම්පූර්ණ ආදායම</p>
             </div>
 
             <div class="glass-card p-5 rounded-2xl border-l-4 border-l-indigo-500">
@@ -123,42 +142,60 @@
                     <span class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg"><i class="fas fa-coins"></i></span>
                 </div>
                 <div class="text-2xl font-black text-indigo-400 font-mono">Rs. <span id="kpiTotalProfit">0.00</span></div>
+                <p class="text-[11px] text-emerald-400 font-bold mt-2" id="kpiProfitMargin">Margin: 0%</p>
             </div>
 
-            <div class="glass-card p-5 rounded-2xl border-l-4 border-l-purple-500">
+            <div class="glass-card p-5 rounded-2xl border-l-4 border-l-rose-500">
                 <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-2">
-                    <span>Quotations & Inquiries</span>
-                    <span class="p-2 bg-purple-500/10 text-purple-400 rounded-lg"><i class="fas fa-comments"></i></span>
+                    <span>Damaged / Lost Stock</span>
+                    <span class="p-2 bg-rose-500/10 text-rose-400 rounded-lg"><i class="fas fa-heart-crack"></i></span>
                 </div>
-                <div class="text-2xl font-black text-purple-400 font-mono"><span id="kpiQuotesInquiries">0 / 0</span></div>
+                <div class="text-2xl font-black text-rose-400 font-mono"><span id="kpiDamagedQty">0</span> Items</div>
+                <p class="text-[11px] text-slate-400 mt-2">හානි වූ අයිතම සංඛ්‍යාව</p>
             </div>
 
             <div class="glass-card p-5 rounded-2xl border-l-4 border-l-amber-500">
                 <div class="flex justify-between items-center text-slate-400 text-xs font-bold uppercase mb-2">
                     <span>Low Stock Alerts</span>
-                    <span class="p-2 bg-amber-500/10 text-amber-400 rounded-lg"><i class="fas fa-triangle-exclamation"></i></span>
+                    <span class="p-2 bg-amber-500/10 text-amber-400 rounded-lg pulse-badge"><i class="fas fa-triangle-exclamation"></i></span>
                 </div>
                 <div class="text-2xl font-black text-amber-400 font-mono"><span id="kpiLowStock">0</span> Items</div>
+                <p class="text-[11px] text-slate-400 mt-2">තොග ඉවර වෙන්න ලඟ භාණ්ඩ</p>
             </div>
         </div>
 
-        <!-- Inventory with Variants Section -->
+        <!-- Inventory & Variants Section -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-4 no-print">
+            <div class="lg:col-span-4 no-print space-y-6">
                 <div class="glass-card p-6 rounded-3xl space-y-4">
                     <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
-                        <i class="fas fa-box text-emerald-400"></i> Stock Item & Variants එකතු කරන්න
+                        <i class="fas fa-box text-emerald-400"></i> Stock Item & Variant එකතු කරන්න
                     </h2>
-                    <form id="stockForm" class="space-y-3">
-                        <input type="text" id="stockItemName" placeholder="Item Name (e.g. T-Shirt, Tiles)" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none" required>
-                        <input type="text" id="stockVariant" placeholder="Variant (Size: XL, Color: Red / 60x60)" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none" required>
-                        <div class="grid grid-cols-2 gap-3">
-                            <input type="number" id="stockQty" min="0" placeholder="Qty" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none" required>
-                            <input type="number" id="stockCost" min="0" step="any" placeholder="Cost (Rs)" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none" required>
+                    <form id="stockForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Name</label>
+                            <input type="text" id="stockItemName" placeholder="Item Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
                         </div>
-                        <input type="number" id="stockPrice" min="0" step="any" placeholder="Selling Price (Rs)" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none" required>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 px-4 rounded-xl transition text-sm">
-                            <i class="fas fa-plus"></i> Save Item & Variant
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Variant (Size / Color / Model)</label>
+                            <input type="text" id="stockVariant" placeholder="e.g. Size: XL, Red / Standard" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Stock Qty</label>
+                                <input type="number" id="stockQty" min="0" placeholder="0" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Buying Cost (Rs)</label>
+                                <input type="number" id="stockCost" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Selling Price (Rs)</label>
+                            <input type="number" id="stockPrice" min="0" step="any" placeholder="0.00" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-mono bg-slate-900/80 text-white outline-none focus:border-emerald-500" required>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                            <i class="fas fa-plus"></i> Save Inventory Item
                         </button>
                     </form>
                 </div>
@@ -167,7 +204,7 @@
             <div class="lg:col-span-8">
                 <div class="glass-card p-6 rounded-3xl overflow-hidden">
                     <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3 mb-4">
-                        <i class="fas fa-warehouse text-amber-400"></i> Stock & Variant Inventory
+                        <i class="fas fa-warehouse text-amber-400"></i> Stock Status & Item-Wise Profit Breakdown
                     </h2>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[600px]">
@@ -175,8 +212,9 @@
                                 <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
                                     <th class="p-3">Item & Variant</th>
                                     <th class="p-3 text-right">Cost / Sale</th>
+                                    <th class="p-3 text-right">Profit / Unit</th>
                                     <th class="p-3 text-center">Available Stock</th>
-                                    <th class="p-3 text-center no-print">Action</th>
+                                    <th class="p-3 text-center no-print">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="stockTableBody" class="text-sm divide-y divide-slate-800"></tbody>
@@ -186,9 +224,64 @@
             </div>
         </div>
 
-        <!-- Quotation, Orders & Inquiry Section Tabs -->
+        <!-- Sales Growth Graph & Order Placement Form -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Inquiry Management -->
+            <div class="glass-card p-6 rounded-3xl">
+                <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
+                    <i class="fas fa-chart-line text-purple-400"></i> Sales Growth Trend
+                </h2>
+                <div class="relative h-64 w-full">
+                    <canvas id="salesGrowthChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl no-print">
+                <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4 border-b border-slate-700/60 pb-3">
+                    <i class="fas fa-cart-shopping text-indigo-400"></i> නව Order එකක් Place කරන්න
+                </h2>
+                <form id="orderForm" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Customer Name</label>
+                            <input type="text" id="custName" placeholder="Customer Name..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">WhatsApp Phone (947XXXXXXXX)</label>
+                            <input type="text" id="custPhone" placeholder="947XXXXXXXX" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Select Item & Variant</label>
+                            <select id="orderItemSelect" class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Order Qty</label>
+                            <input type="number" id="orderQty" min="1" value="1" class="w-full rounded-xl border border-slate-700 p-3 text-sm font-bold bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Courier / Tracking Ref</label>
+                            <input type="text" id="trackingRef" placeholder="Tracking No..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address</label>
+                            <input type="text" id="custAddress" placeholder="Address..." class="w-full rounded-xl border border-slate-700 p-3 text-sm bg-slate-900/80 text-white outline-none focus:border-indigo-500" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full btn-animated text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle"></i> Place Order & Deduct Stock
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Inquiry & Quotation Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card p-6 rounded-3xl space-y-4">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
                     <i class="fas fa-headset text-purple-400"></i> Customer Inquiry Tracker
@@ -201,14 +294,13 @@
                         <i class="fas fa-plus"></i> Save Inquiry
                     </button>
                 </form>
-                <div class="overflow-y-auto max-h-48">
+                <div class="overflow-y-auto max-h-40">
                     <table class="w-full text-left text-xs">
                         <tbody id="inquiryTableBody" class="divide-y divide-slate-800"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Quotation Generator -->
             <div class="glass-card p-6 rounded-3xl space-y-4">
                 <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
                     <i class="fas fa-file-signature text-indigo-400"></i> Issue Quotation (මිල ගණන් යැවීම)
@@ -223,25 +315,28 @@
                         <input type="number" id="quoteQty" min="1" value="1" placeholder="Qty" class="rounded-xl border border-slate-700 p-2.5 text-xs bg-slate-900/80 text-white outline-none" required>
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs">
-                        <i class="fas fa-paper-plane"></i> Generate Quotation & PDF/WhatsApp
+                        <i class="fas fa-paper-plane"></i> Generate Quotation PDF & WhatsApp
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Orders & Direct Purchase Handling -->
-        <div class="glass-card p-6 rounded-3xl space-y-4">
-            <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-700/60 pb-3">
-                <i class="fas fa-cart-shopping text-emerald-400"></i> Orders Directory & PDF / WhatsApp Invoices
-            </h2>
+        <!-- Orders Directory -->
+        <div class="glass-card p-6 rounded-3xl overflow-hidden">
+            <div class="flex justify-between items-center border-b border-slate-700/60 pb-3 mb-4">
+                <h2 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-paper-plane text-emerald-400"></i> Orders Directory & Return Handler
+                </h2>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-[750px]">
                     <thead>
                         <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
-                            <th class="p-3">Customer & Order</th>
-                            <th class="p-3 text-right">Price</th>
-                            <th class="p-3 text-center">Status</th>
-                            <th class="p-3 text-center no-print">Actions (PDF / WhatsApp)</th>
+                            <th class="p-3">Order Details</th>
+                            <th class="p-3">Customer & Address</th>
+                            <th class="p-3 text-right">Order Profit</th>
+                            <th class="p-3 text-center">Status & Return Action</th>
+                            <th class="p-3 text-center no-print">Actions (Sticker / PDF / WA)</th>
                         </tr>
                     </thead>
                     <tbody id="ordersTableBody" class="text-sm divide-y divide-slate-800"></tbody>
@@ -256,7 +351,104 @@
         <p>© 2026 <strong>Smart Business Pro OS</strong>. All Rights Reserved.</p>
     </footer>
 
-    <!-- HIDDEN HTML TEMPLATE FOR PDF INVOICE & QUOTATION GENERATION -->
+    <!-- PRINTABLE SHIPPING LABEL STICKER MODAL -->
+    <div id="shippingStickerModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white text-slate-900 p-6 rounded-2xl max-w-md w-full border-2 border-black space-y-4 shadow-2xl">
+            <div class="border-b-2 border-black pb-2 text-center">
+                <h3 class="text-xl font-black uppercase tracking-wider">PARCEL SHIPPING LABEL</h3>
+                <p class="text-xs font-mono">EXPRESS COURIER DELIVERY</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs border-b pb-3">
+                <div>
+                    <span class="font-bold text-slate-500 block uppercase">ORDER ID:</span>
+                    <span id="lblOrderId" class="font-mono font-bold text-base">#ORD-000</span>
+                </div>
+                <div class="text-right">
+                    <span class="font-bold text-slate-500 block uppercase">TRACKING REF:</span>
+                    <span id="lblTrackingNo" class="font-mono font-bold text-sm text-indigo-700">-</span>
+                </div>
+            </div>
+            <div class="space-y-1 text-xs border-b pb-3">
+                <span class="font-bold text-slate-500 uppercase block">RECIPIENT / RECIPIENT DETAILS:</span>
+                <p id="lblCustName" class="font-bold text-base text-slate-900"></p>
+                <p id="lblCustPhone" class="font-mono font-bold text-sm"></p>
+                <p id="lblCustAddress" class="text-slate-700 font-medium leading-tight"></p>
+            </div>
+            <div class="text-xs space-y-1 border-b pb-3">
+                <span class="font-bold text-slate-500 uppercase block">PACKAGE CONTENTS & QTY:</span>
+                <p id="lblItemName" class="font-bold text-sm text-indigo-900"></p>
+            </div>
+            <div class="text-xs space-y-1 bg-slate-50 p-2 rounded-lg border">
+                <span class="font-bold text-slate-500 uppercase block">SENDER DETAILS:</span>
+                <input type="text" id="lblSenderName" placeholder="Sender Name..." class="w-full border p-1 text-xs font-bold rounded">
+                <input type="text" id="lblSenderPhone" placeholder="Sender Phone..." class="w-full border p-1 text-xs font-mono rounded">
+                <input type="text" id="lblSenderAddress" placeholder="Sender Address..." class="w-full border p-1 text-xs rounded">
+            </div>
+            <div class="flex gap-2 no-print-btn pt-2">
+                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs"><i class="fas fa-print"></i> Print Label</button>
+                <button onclick="closeSticker()" class="w-full bg-slate-200 text-slate-800 font-bold py-2 rounded-xl text-xs">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MONTHLY BUSINESS REPORT MODAL -->
+    <div id="monthlyReportModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white text-slate-900 p-6 rounded-2xl max-w-2xl w-full border-2 border-black space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="border-b-2 border-black pb-3 text-center">
+                <h3 class="text-2xl font-black uppercase">MONTHLY BUSINESS PERFORMANCE REPORT</h3>
+                <p class="text-xs font-mono text-slate-600">Generated on: <span id="reportGenDate"></span></p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">TOTAL REVENUE</span>
+                    <span id="rptTotalRevenue" class="text-base font-black text-emerald-700">Rs. 0.00</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">TOTAL NET PROFIT</span>
+                    <span id="rptTotalProfit" class="text-base font-black text-indigo-700">Rs. 0.00</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">PROFIT MARGIN</span>
+                    <span id="rptProfitMargin" class="text-base font-black text-purple-700">0%</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">INQUIRIES COUNT</span>
+                    <span id="rptInquiriesCount" class="text-base font-black text-purple-700">0</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">QUOTATIONS ISSUED</span>
+                    <span id="rptQuotesCount" class="text-base font-black text-indigo-700">0</span>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-lg border">
+                    <span class="block text-slate-500 font-bold">DAMAGED LOSS</span>
+                    <span id="rptDamagedQty" class="text-base font-black text-rose-700">0 Items</span>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <h4 class="font-bold text-xs uppercase text-slate-700 border-b pb-1">Order Summary Breakdown</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-200 font-bold border-b">
+                                <th class="p-1.5">Date</th>
+                                <th class="p-1.5">Customer</th>
+                                <th class="p-1.5">Item & Qty</th>
+                                <th class="p-1.5 text-right">Sale Price</th>
+                                <th class="p-1.5 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody" class="divide-y border-b"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex gap-2 no-print-btn pt-2">
+                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"><i class="fas fa-print"></i> Print Report</button>
+                <button onclick="closeMonthlyReportModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN PDF INVOICE TEMPLATE -->
     <div id="pdfInvoiceTemplate" class="hidden p-8 bg-white text-slate-900 space-y-6 max-w-2xl mx-auto">
         <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
             <div>
@@ -268,13 +460,11 @@
                 <p class="text-xs text-slate-600">Official Bill / Quotation</p>
             </div>
         </div>
-
         <div class="border-b pb-4 text-xs space-y-1">
             <span class="font-bold text-slate-500 uppercase block">CUSTOMER DETAILS:</span>
             <p id="pdfCustName" class="font-bold text-base"></p>
             <p id="pdfCustPhone" class="font-mono"></p>
         </div>
-
         <table class="w-full text-left text-xs border-collapse">
             <thead>
                 <tr class="bg-slate-100 font-bold border-b border-slate-300">
@@ -291,68 +481,81 @@
                 </tr>
             </tbody>
         </table>
-
         <div class="text-right pt-4 border-t-2 border-slate-900">
             <span class="text-xs font-bold text-slate-500 block">TOTAL AMOUNT:</span>
             <span id="pdfGrandTotal" class="text-2xl font-black text-indigo-900 font-mono">Rs. 0.00</span>
         </div>
     </div>
 
-    <!-- MONTHLY BUSINESS REPORT MODAL WITH INQUIRY & QUOTATION ANALYSIS -->
-    <div id="monthlyReportModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white text-slate-900 p-6 rounded-2xl max-w-2xl w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="border-b-2 border-black pb-3 text-center">
-                <h3 class="text-2xl font-black uppercase">MONTHLY PERFORMANCE & INQUIRY REPORT</h3>
-            </div>
+    <!-- ANTI-COPY SCRIPT -->
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = function(e) {
+            if (e.keyCode === 123 || (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0)) || (e.ctrlKey && e.shiftKey && e.keyCode === 'I'.charCodeAt(0))) return false;
+        };
+    </script>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono">
-                <div class="bg-slate-100 p-3 rounded-lg border">
-                    <span class="block text-slate-500 font-bold">TOTAL REVENUE</span>
-                    <span id="rptTotalRevenue" class="text-base font-black text-emerald-700">Rs. 0.00</span>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg border">
-                    <span class="block text-slate-500 font-bold">TOTAL NET PROFIT</span>
-                    <span id="rptTotalProfit" class="text-base font-black text-indigo-700">Rs. 0.00</span>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg border">
-                    <span class="block text-slate-500 font-bold">INQUIRIES COUNT</span>
-                    <span id="rptInquiriesCount" class="text-base font-black text-purple-700">0</span>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg border">
-                    <span class="block text-slate-500 font-bold">QUOTATIONS ISSUED</span>
-                    <span id="rptQuotesCount" class="text-base font-black text-indigo-700">0</span>
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg border">
-                    <span class="block text-slate-500 font-bold">CONFIRMED INVOICES</span>
-                    <span id="rptInvoicesCount" class="text-base font-black text-emerald-700">0</span>
-                </div>
-            </div>
+    <!-- DEVICE-LOCK & CLOUD SYNC ENGINE -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientKey = urlParams.get('key');
+        const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzvEOijNAgkKmucXoNPWT6D0uESaVGl1zM70Wm03ql_ySepn1s9jwoud3_Go77HBQCW/exec";
 
-            <div class="flex gap-2 no-print pt-2">
-                <button onclick="window.print()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs"><i class="fas fa-print"></i> Print Report</button>
-                <button onclick="closeMonthlyReportModal()" class="w-full bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl text-xs">Close</button>
-            </div>
-        </div>
-    </div>
+        let isLicenseVerified = false;
 
-    <!-- MAIN APP SCRIPT -->
+        (function() {
+            if (!clientKey) {
+                showBlocked("⛔ Access Denied!", "Valid License Key Required in URL");
+                return;
+            }
+            const deviceFP = window.btoa(navigator.userAgent.replace(/\s+/g, '') + screen.width + "x" + screen.height);
+
+            fetch(`${DEFAULT_ENDPOINT}?key=${encodeURIComponent(clientKey)}&device=${encodeURIComponent(deviceFP)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "SUCCESS") {
+                        isLicenseVerified = true;
+                        if (data.cloudData && data.cloudData.trim().length > 0) {
+                            try { restoreStateFromCloud(JSON.parse(data.cloudData)); } catch(err){}
+                        }
+                    } else { showBlocked("⛔ Access Denied!", data.message); }
+                }).catch(() => showBlocked("⛔ Verification Error", "Unable to connect to Google Drive server."));
+
+            function showBlocked(title, msg) {
+                document.body.innerHTML = `<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0b1120;color:#ef4444;font-family:sans-serif;text-align:center;"><div style="background:#1e293b;padding:30px;border-radius:16px;border:1px solid #ef4444;max-width:420px;"><h1 style="font-size:1.5rem;margin-bottom:12px;">${title}</h1><p style="color:#94a3b8;font-size:0.9rem;">${msg}</p></div></div>`;
+            }
+        })();
+
+        function syncDataToCloud(statePayload) {
+            if (!clientKey || !isLicenseVerified) return;
+            const syncBadge = document.getElementById('syncBadge');
+            if (syncBadge) syncBadge.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Syncing...`;
+
+            fetch(`${DEFAULT_ENDPOINT}?key=${encodeURIComponent(clientKey)}&action=save_data&payload=${encodeURIComponent(JSON.stringify(statePayload))}`)
+                .then(() => { if (syncBadge) syncBadge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Cloud Synced`; });
+        }
+    </script>
+
+    <!-- MAIN APP LOGIC -->
     <script>
         let savedPin = localStorage.getItem('biz_sys_pin') || '1234';
         let inventory = JSON.parse(localStorage.getItem('biz_inventory_data')) || [];
         let orders = JSON.parse(localStorage.getItem('biz_orders_data')) || [];
         let inquiries = JSON.parse(localStorage.getItem('biz_inquiries_data')) || [];
         let quotations = JSON.parse(localStorage.getItem('biz_quotations_data')) || [];
+        let damagedItemsCount = parseInt(localStorage.getItem('biz_damaged_qty')) || 0;
+        let salesChartInstance = null;
 
         const formatMoney = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        // Auth
+        // Auth Handling
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             if (document.getElementById('inputPin').value === savedPin) {
                 document.getElementById('authOverlay').classList.add('hidden');
                 document.getElementById('mainSystem').classList.remove('hidden');
                 renderApp();
-            } else { alert('වැරදි PIN එකකි!'); }
+            } else { alert('වැරදි PIN අංකයකි!'); }
         });
 
         function lockSystem() {
@@ -360,7 +563,19 @@
             document.getElementById('authOverlay').classList.remove('hidden');
         }
 
-        // Add Stock Item & Variant
+        function changePinModal() {
+            const current = prompt('Enter Current PIN:');
+            if (current === savedPin) {
+                const newPin = prompt('Enter NEW PIN:');
+                if (newPin && newPin.trim().length >= 4) {
+                    savedPin = newPin.trim();
+                    localStorage.setItem('biz_sys_pin', savedPin);
+                    alert('PIN අංකය වෙනස් කරන ලදී!');
+                }
+            }
+        }
+
+        // Add Inventory Item & Variant
         document.getElementById('stockForm').addEventListener('submit', (e) => {
             e.preventDefault();
             inventory.push({
@@ -372,6 +587,44 @@
                 price: parseFloat(document.getElementById('stockPrice').value) || 0
             });
             document.getElementById('stockForm').reset();
+            saveAndSync();
+        });
+
+        // Place Order & Deduct Stock
+        document.getElementById('orderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const itemId = parseInt(document.getElementById('orderItemSelect').value);
+            const reqQty = parseInt(document.getElementById('orderQty').value) || 1;
+            const stockItem = inventory.find(i => i.id === itemId);
+
+            if (!stockItem || stockItem.qty < reqQty) {
+                alert(`⚠️ තෝරාගත් භාණ්ඩයේ Stock එක ප්‍රමාණවත් නැත! (Available: ${stockItem ? stockItem.qty : 0})`);
+                return;
+            }
+
+            stockItem.qty -= reqQty;
+
+            const totalItemCost = stockItem.cost * reqQty;
+            const totalItemSale = stockItem.price * reqQty;
+            const totalOrderProfit = totalItemSale - totalItemCost;
+
+            const newOrder = {
+                id: Date.now(),
+                itemId: stockItem.id,
+                custName: document.getElementById('custName').value,
+                custPhone: document.getElementById('custPhone').value,
+                custAddress: document.getElementById('custAddress').value,
+                itemName: `${stockItem.name} (${stockItem.variant})`,
+                orderQty: reqQty,
+                price: totalItemSale,
+                profit: totalOrderProfit,
+                trackingRef: document.getElementById('trackingRef').value || 'Pending',
+                status: 'Processing',
+                date: new Date().toLocaleDateString()
+            };
+
+            orders.push(newOrder);
+            document.getElementById('orderForm').reset();
             saveAndSync();
         });
 
@@ -403,7 +656,7 @@
                 custName: document.getElementById('quoteCustName').value,
                 custPhone: document.getElementById('quoteCustPhone').value,
                 itemName: `${stockItem.name} (${stockItem.variant})`,
-                qty: reqQty,
+                orderQty: reqQty,
                 price: stockItem.price * reqQty,
                 date: new Date().toLocaleDateString()
             };
@@ -414,6 +667,62 @@
             generatePDFInvoice(quoteObj, 'QUOTATION');
         });
 
+        // Return Handler
+        function updateOrderStatus(id, newStatus) {
+            const ord = orders.find(o => o.id === id);
+            if (!ord) return;
+
+            const oldStatus = ord.status;
+
+            if ((newStatus === 'Cancelled' || newStatus === 'Returned') && (oldStatus !== 'Cancelled' && oldStatus !== 'Returned')) {
+                const isDamaged = confirm(`මෙම Order එක Cancelled/Returned ලෙස සටහන් විය.\n\nමෙම භාණ්ඩය හානි වී තිබේද (Damaged/Cannot Resell)?\n- OK ක්ලික් කළහොත්: Damaged ලෙස සටහන් වේ (Stock එකට එකතු නොවේ)\n- Cancel ක්ලික් කළහොත්: ආපසු Stock එකට එකතු වේ (Restocked)`);
+
+                if (isDamaged) {
+                    damagedItemsCount += ord.orderQty;
+                    alert(`⚠️ භාණ්ඩය Damaged ලෙස සටහන් කර ගන්නා ලදී.`);
+                } else {
+                    const stockItem = inventory.find(i => i.id === ord.itemId);
+                    if (stockItem) {
+                        stockItem.qty += ord.orderQty;
+                        alert(`✓ භාණ්ඩය නැවත Stock එකට එකතු කරන ලදී.`);
+                    }
+                }
+            }
+
+            ord.status = newStatus;
+            saveAndSync();
+        }
+
+        function deleteStock(id) {
+            if (confirm('මෙම Stock අයිතමය ඉවත් කිරීමට අවශ්‍යද?')) {
+                inventory = inventory.filter(i => i.id !== id);
+                saveAndSync();
+            }
+        }
+
+        function sendWhatsAppMsg(id) {
+            const ord = orders.find(o => o.id === id);
+            if (ord) {
+                let msg = `👋 *Hello ${ord.custName}*,\n\nඔබගේ Order එකෙහි විස්තර පහත දැක්වේ:\n📦 *Item:* ${ord.itemName} (Qty: ${ord.orderQty})\n💰 *Price:* Rs. ${formatMoney(ord.price)}\n🚚 *Status:* ${ord.status}\n📌 *Tracking No:* ${ord.trackingRef}\n\nස්තූතියි!`;
+                window.open(`https://wa.me/${ord.custPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+        }
+
+        function openShippingSticker(id) {
+            const ord = orders.find(o => o.id === id);
+            if (ord) {
+                document.getElementById('lblOrderId').innerText = `#ORD-${ord.id.toString().slice(-4)}`;
+                document.getElementById('lblTrackingNo').innerText = ord.trackingRef;
+                document.getElementById('lblCustName').innerText = ord.custName;
+                document.getElementById('lblCustPhone').innerText = ord.custPhone;
+                document.getElementById('lblCustAddress').innerText = ord.custAddress;
+                document.getElementById('lblItemName').innerText = `${ord.itemName} (Qty: ${ord.orderQty})`;
+                document.getElementById('shippingStickerModal').classList.remove('hidden');
+            }
+        }
+
+        function closeSticker() { document.getElementById('shippingStickerModal').classList.add('hidden'); }
+
         function generatePDFInvoice(obj, type) {
             document.getElementById('pdfDocType').innerText = type;
             document.getElementById('pdfRefNo').innerText = `#${type.slice(0,3)}-${obj.id.toString().slice(-4)}`;
@@ -421,7 +730,7 @@
             document.getElementById('pdfCustName').innerText = obj.custName;
             document.getElementById('pdfCustPhone').innerText = obj.custPhone;
             document.getElementById('pdfItemDesc').innerText = obj.itemName;
-            document.getElementById('pdfQty').innerText = obj.qty || obj.orderQty;
+            document.getElementById('pdfQty').innerText = obj.orderQty;
             document.getElementById('pdfPrice').innerText = `Rs. ${formatMoney(obj.price)}`;
             document.getElementById('pdfGrandTotal').innerText = `Rs. ${formatMoney(obj.price)}`;
 
@@ -435,49 +744,105 @@
             });
         }
 
-        function saveAndSync() {
-            localStorage.setItem('biz_inventory_data', JSON.stringify(inventory));
-            localStorage.setItem('biz_orders_data', JSON.stringify(orders));
-            localStorage.setItem('biz_inquiries_data', JSON.stringify(inquiries));
-            localStorage.setItem('biz_quotations_data', JSON.stringify(quotations));
-            renderApp();
-        }
-
         function openMonthlyReportModal() {
             let totalRev = 0, totalNetProfit = 0;
-            orders.forEach(o => { totalRev += o.price; totalNetProfit += (o.profit || 0); });
+            const reportTable = document.getElementById('reportTableBody');
+            reportTable.innerHTML = '';
 
+            orders.forEach(o => {
+                if (o.status !== 'Cancelled' && o.status !== 'Returned') {
+                    totalRev += o.price; totalNetProfit += (o.profit || 0);
+                }
+                reportTable.innerHTML += `
+                    <tr>
+                        <td class="p-1.5">${o.date}</td>
+                        <td class="p-1.5 font-bold">${o.custName}</td>
+                        <td class="p-1.5">${o.itemName} (x${o.orderQty})</td>
+                        <td class="p-1.5 text-right font-mono">Rs. ${formatMoney(o.price)}</td>
+                        <td class="p-1.5 text-center font-bold text-xs">${o.status}</td>
+                    </tr>`;
+            });
+
+            const margin = totalRev > 0 ? ((totalNetProfit / totalRev) * 100).toFixed(1) : 0;
+
+            document.getElementById('reportGenDate').innerText = new Date().toLocaleDateString();
             document.getElementById('rptTotalRevenue').innerText = `Rs. ${formatMoney(totalRev)}`;
             document.getElementById('rptTotalProfit').innerText = `Rs. ${formatMoney(totalNetProfit)}`;
+            document.getElementById('rptProfitMargin').innerText = `${margin}%`;
             document.getElementById('rptInquiriesCount').innerText = inquiries.length;
             document.getElementById('rptQuotesCount').innerText = quotations.length;
-            document.getElementById('rptInvoicesCount').innerText = orders.length;
+            document.getElementById('rptDamagedQty').innerText = `${damagedItemsCount} Items`;
 
             document.getElementById('monthlyReportModal').classList.remove('hidden');
         }
 
         function closeMonthlyReportModal() { document.getElementById('monthlyReportModal').classList.add('hidden'); }
 
+        function saveAndSync() {
+            localStorage.setItem('biz_inventory_data', JSON.stringify(inventory));
+            localStorage.setItem('biz_orders_data', JSON.stringify(orders));
+            localStorage.setItem('biz_inquiries_data', JSON.stringify(inquiries));
+            localStorage.setItem('biz_quotations_data', JSON.stringify(quotations));
+            localStorage.setItem('biz_damaged_qty', damagedItemsCount.toString());
+            syncDataToCloud({ inventory: inventory, orders: orders, inquiries: inquiries, quotations: quotations, damagedItemsCount: damagedItemsCount });
+            renderApp();
+        }
+
+        function restoreStateFromCloud(state) {
+            if (state) {
+                if (state.inventory) inventory = state.inventory;
+                if (state.orders) orders = state.orders;
+                if (state.inquiries) inquiries = state.inquiries;
+                if (state.quotations) quotations = state.quotations;
+                if (state.damagedItemsCount) damagedItemsCount = state.damagedItemsCount;
+                renderApp();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('සියලුම Data ඉවත් කිරීමට අවශ්‍යද?')) {
+                inventory = []; orders = []; inquiries = []; quotations = []; damagedItemsCount = 0;
+                saveAndSync();
+            }
+        }
+
         function renderApp() {
-            // Render Stock Options
-            const selectEl = document.getElementById('quoteItemSelect');
-            selectEl.innerHTML = '';
+            // Render Select Options
+            const orderSel = document.getElementById('orderItemSelect');
+            const quoteSel = document.getElementById('quoteItemSelect');
+            orderSel.innerHTML = ''; quoteSel.innerHTML = '';
+
             inventory.forEach(i => {
-                selectEl.innerHTML += `<option value="${i.id}">${i.name} - [${i.variant}] (Stock: ${i.qty})</option>`;
+                const opt = `<option value="${i.id}">${i.name} [${i.variant}] (Stock: ${i.qty}) - Rs.${i.price}</option>`;
+                orderSel.innerHTML += opt;
+                quoteSel.innerHTML += opt;
             });
 
             // Stock Table
             const stockBody = document.getElementById('stockTableBody');
             stockBody.innerHTML = '';
             let lowStockCount = 0;
+
             inventory.forEach(i => {
-                if(i.qty <= 5) lowStockCount++;
+                const itemProfit = i.price - i.cost;
+                let badge = `<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full text-xs font-bold">Good Stock ✓</span>`;
+                if (i.qty <= 5 && i.qty > 0) {
+                    badge = `<span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full text-xs font-bold pulse-badge">Low Stock ⚠️</span>`;
+                    lowStockCount++;
+                } else if (i.qty === 0) {
+                    badge = `<span class="bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full text-xs font-bold">Out of Stock ✖</span>`;
+                    lowStockCount++;
+                }
+
                 stockBody.innerHTML += `
-                    <tr class="border-b border-slate-800">
+                    <tr class="hover:bg-slate-800/50 border-b border-slate-800">
                         <td class="p-3 font-bold text-white">${i.name} <span class="text-xs text-indigo-400">(${i.variant})</span></td>
-                        <td class="p-3 text-right font-mono text-xs">Cost: ${formatMoney(i.cost)}<br><span class="text-emerald-400 font-bold">Sale: ${formatMoney(i.price)}</span></td>
-                        <td class="p-3 text-center font-bold text-white">${i.qty}</td>
-                        <td class="p-3 text-center"><button onclick="inventory=inventory.filter(x=>x.id!=${i.id});saveAndSync();" class="text-slate-500 hover:text-rose-400"><i class="fas fa-trash"></i></button></td>
+                        <td class="p-3 text-right font-mono text-xs">Cost: Rs.${formatMoney(i.cost)}<br><span class="text-emerald-400 font-bold">Sale: Rs.${formatMoney(i.price)}</span></td>
+                        <td class="p-3 text-right font-mono font-bold text-indigo-400">Rs. ${formatMoney(itemProfit)}</td>
+                        <td class="p-3 text-center font-mono font-bold text-white">${i.qty}<br>${badge}</td>
+                        <td class="p-3 text-center no-print">
+                            <button onclick="deleteStock(${i.id})" class="text-slate-500 hover:text-rose-400 p-1"><i class="fas fa-trash-alt"></i></button>
+                        </td>
                     </tr>`;
             });
 
@@ -487,31 +852,87 @@
             inquiries.forEach(i => {
                 inqBody.innerHTML += `
                     <tr class="border-b border-slate-800">
-                        <td class="p-2"><span class="font-bold text-white">${i.name}</span> (${i.phone})<br><span class="text-slate-400">${i.note}</span></td>
+                        <td class="p-2"><span class="font-bold text-white">${i.name}</span> (${i.phone}) - <span class="text-indigo-400 font-mono">${i.date}</span><br><span class="text-slate-400">${i.note}</span></td>
                     </tr>`;
             });
 
             // Orders Table
             const ordersBody = document.getElementById('ordersTableBody');
             ordersBody.innerHTML = '';
-            let totalRev = 0, totalProfit = 0;
+            let totalRev = 0, totalNetProfit = 0;
+
             orders.forEach(o => {
-                totalRev += o.price; totalProfit += (o.profit || 0);
+                if (o.status !== 'Cancelled' && o.status !== 'Returned') {
+                    totalRev += o.price; totalNetProfit += (o.profit || 0);
+                }
+
                 ordersBody.innerHTML += `
-                    <tr class="border-b border-slate-800">
-                        <td class="p-3"><div class="font-bold text-white">${o.custName}</div><div class="text-xs text-slate-400">${o.itemName}</div></td>
-                        <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(o.price)}</td>
-                        <td class="p-3 text-center"><span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-1 rounded-lg">${o.status}</span></td>
-                        <td class="p-3 text-center space-x-1">
-                            <button onclick='generatePDFInvoice(${JSON.stringify(o)}, "INVOICE")' class="bg-emerald-600/20 text-emerald-400 p-2 rounded-lg text-xs"><i class="fas fa-file-pdf"></i> PDF & WA</button>
+                    <tr class="hover:bg-slate-800/50 border-b border-slate-800">
+                        <td class="p-3">
+                            <div class="font-bold text-white">${o.itemName} <span class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full">Qty: ${o.orderQty || 1}</span></div>
+                            <div class="text-xs text-slate-400">Sale: Rs. ${formatMoney(o.price)} | ${o.date}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-200">${o.custName} (${o.custPhone})</div>
+                            <div class="text-xs text-slate-400 truncate max-w-[180px]">${o.custAddress}</div>
+                        </td>
+                        <td class="p-3 text-right font-mono font-bold text-emerald-400">Rs. ${formatMoney(o.profit || 0)}</td>
+                        <td class="p-3 text-center">
+                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-white">
+                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                <option value="Returned" ${o.status === 'Returned' ? 'selected' : ''}>Returned</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-center no-print space-x-1">
+                            <button onclick="sendWhatsAppMsg(${o.id})" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 p-2 rounded-lg text-xs" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="openShippingSticker(${o.id})" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 p-2 rounded-lg text-xs" title="Sticker"><i class="fas fa-print"></i></button>
+                            <button onclick='generatePDFInvoice(${JSON.stringify(o)}, "INVOICE")' class="bg-purple-600/20 text-purple-400 border border-purple-500/30 p-2 rounded-lg text-xs" title="PDF Invoice"><i class="fas fa-file-pdf"></i></button>
                         </td>
                     </tr>`;
             });
 
+            // KPI Updates
             document.getElementById('kpiRevenue').innerText = formatMoney(totalRev);
-            document.getElementById('kpiTotalProfit').innerText = formatMoney(totalProfit);
-            document.getElementById('kpiQuotesInquiries').innerText = `${quotations.length} / ${inquiries.length}`;
+            document.getElementById('kpiTotalProfit').innerText = formatMoney(totalNetProfit);
+            document.getElementById('kpiDamagedQty').innerText = damagedItemsCount;
             document.getElementById('kpiLowStock').innerText = lowStockCount;
+
+            const margin = totalRev > 0 ? ((totalNetProfit / totalRev) * 100).toFixed(1) : 0;
+            document.getElementById('kpiProfitMargin').innerText = `Profit Margin: ${margin}%`;
+
+            renderSalesGrowthChart();
+        }
+
+        function renderSalesGrowthChart() {
+            const ctx = document.getElementById('salesGrowthChart').getContext('2d');
+            if (salesChartInstance) salesChartInstance.destroy();
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: orders.slice(-6).map(o => o.date),
+                    datasets: [{
+                        label: 'Revenue Trend (Rs)',
+                        data: orders.slice(-6).map(o => o.price),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' } },
+                        y: { ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
     </script>
 </body>
